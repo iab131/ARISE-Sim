@@ -298,9 +298,16 @@ public class ControlManager : MonoBehaviour
                     GameObject hit = GetObjectUnderCursor(holeLayer);
                     if (hit == null || hit == firstHoleGO) break;
 
-                    if (AreComplementary(firstHoleGO.tag, hit.tag) && GetPartRoot(firstHoleGO).parent != GetPartRoot(hit).parent)
+                    if (AreComplementary(firstHoleGO.tag, hit.tag) && GetGroupRoot(firstHoleGO.transform) != GetGroupRoot(hit.transform))
                     {
                         secondHoleGO = hit;
+
+                        // check if axle
+                        if (firstHoleGO.CompareTag("Axle") || secondHoleGO.CompareTag("Axle"))
+                        {
+                            firstHoleGO = GetAxlePos(firstHoleGO.transform).gameObject;
+                            secondHoleGO = GetAxlePos(secondHoleGO.transform).gameObject;
+                        }
                         PreviewSnap(firstHoleGO, secondHoleGO);
 
                         if (hoverHoleRenderer != null && hoverHoleRenderer != firstHoleRenderer)
@@ -342,7 +349,7 @@ public class ControlManager : MonoBehaviour
         firstHoleGO = hole;
         firstHoleRenderer = hole.GetComponent<Renderer>();
         if (firstHoleRenderer) firstHoleRenderer.enabled = true;
-        Debug.Log($"Picked moving part: {hole.name}");
+        Debug.Log($"Picked moving part: {hole.name} and group {GetGroupRoot(hole.transform).name}");
     }
 
     /* =============================================================
@@ -359,7 +366,7 @@ public class ControlManager : MonoBehaviour
         }
 
         // move part so holeA meets holeB (no parent change)
-        SnapPartToHole(movingPartRoot.parent, holeA.transform, holeB.transform, true);
+        SnapPartToHole(GetGroupRoot(movingPartRoot), holeA.transform, holeB.transform, true);
     }
 
     void CommitSnap()
@@ -369,7 +376,7 @@ public class ControlManager : MonoBehaviour
 
         // final align again (tiny delta) then parent AFTER animation
         SnapPartToHole(
-            movingPartRoot.parent,
+            GetGroupRoot(movingPartRoot),
             firstHoleGO.transform,
             secondHoleGO.transform,
             true,
@@ -436,7 +443,7 @@ public class ControlManager : MonoBehaviour
 
 
                 /* 3│ re-snap so holeA aligns perfectly with holeB */
-                SnapPartToHole(movingPartRoot.parent,
+                SnapPartToHole(GetGroupRoot(movingPartRoot),
                                firstHoleGO.transform,
                                secondHoleGO.transform,
                                true);   // instant, no animation
@@ -487,7 +494,47 @@ public class ControlManager : MonoBehaviour
                (a == "PegHole" && b == "Peg");
     }
 
-    Transform GetPartRoot(GameObject holeObj) => holeObj.transform.parent;
+    //Transform GetPartRoot(GameObject holeObj) => holeObj.transform.parent;
+    Transform GetPartRoot(GameObject holeObj)
+    {
+        Transform t = holeObj.transform;
+        int partsLayer = LayerMask.NameToLayer("Parts");
+
+        while (t != null)
+        {
+            if (t.gameObject.layer == partsLayer)
+                return t;
+
+            t = t.parent;
+        }
+
+        return null;
+    }
+
+
+    Transform GetGroupRoot(Transform t)
+    {
+        for (int i = 0; i < 3 && t.parent != null; i++)
+        {
+            t = t.parent;
+            if (t.name.Contains("Group"))
+                return t;
+        }
+
+        return t; // No "Group" parent found within 3 levels
+    }
+
+    Transform GetAxlePos(Transform root)
+    {
+        foreach (Transform child in root)
+        {
+            if (child.name.Contains("AxlePos"))
+                return child;
+        }
+
+        // No matching child found — return the original root
+        return root;
+    }
 
     void SnapPartToHole(
     Transform partRoot, Transform holeA, Transform holeB,
