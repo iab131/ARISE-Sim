@@ -298,7 +298,7 @@ public class ControlManager : MonoBehaviour
                     GameObject hit = GetObjectUnderCursor(holeLayer);
                     if (hit == null || hit == firstHoleGO) break;
 
-                    if (AreComplementary(firstHoleGO.tag, hit.tag))
+                    if (AreComplementary(firstHoleGO.tag, hit.tag) && GetPartRoot(firstHoleGO).parent != GetPartRoot(hit).parent)
                     {
                         secondHoleGO = hit;
                         PreviewSnap(firstHoleGO, secondHoleGO);
@@ -318,9 +318,10 @@ public class ControlManager : MonoBehaviour
 
             /* 3. PREVIEW / ROTATE / CONFIRM */
             case HoleState.PreviewAdjust:
-                if (IsCancelPressed()) { CancelPreview(true); ClearAllHoleState(); break; }
                 HandlePreviewRotationKeys();
-                if (IsConfirmPressed()) { CommitSnap(); }
+
+                if (IsCancelPressed()) { CancelPreview(true); ClearAllHoleState(); break; }
+                if (IsConfirmPressed()) { CommitSnap(); break; }
                 break;
         }
     }
@@ -358,7 +359,7 @@ public class ControlManager : MonoBehaviour
         }
 
         // move part so holeA meets holeB (no parent change)
-        SnapPartToHole(movingPartRoot, holeA.transform, holeB.transform, true);
+        SnapPartToHole(movingPartRoot.parent, holeA.transform, holeB.transform, true);
     }
 
     void CommitSnap()
@@ -368,16 +369,22 @@ public class ControlManager : MonoBehaviour
 
         // final align again (tiny delta) then parent AFTER animation
         SnapPartToHole(
-            movingPartRoot,
+            movingPartRoot.parent,
             firstHoleGO.transform,
             secondHoleGO.transform,
             true,
-            () => {
+            () =>
+            {
                 MergeGroup(moverRoot, targetRoot);
+                DestroyUsedHoles();
                 ClearAllHoleState();
             });
     }
-
+    void DestroyUsedHoles()
+    {
+        Destroy(firstHoleGO);
+        Destroy(secondHoleGO);
+    }
     /* =============================================================
      *  PREVIEW ROTATION / FLIP
      * =============================================================*/
@@ -429,7 +436,7 @@ public class ControlManager : MonoBehaviour
 
 
                 /* 3│ re-snap so holeA aligns perfectly with holeB */
-                SnapPartToHole(movingPartRoot,
+                SnapPartToHole(movingPartRoot.parent,
                                firstHoleGO.transform,
                                secondHoleGO.transform,
                                true);   // instant, no animation
@@ -621,5 +628,4 @@ public class ControlManager : MonoBehaviour
             target.position += offset;       // keep world position identical
         }
     }
-
 }
