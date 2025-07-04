@@ -360,8 +360,8 @@ public class ControlManager : MonoBehaviour
         if (movingPartRoot == null)
         {
             movingPartRoot = GetPartRoot(holeA);   // moving part root
-            previewOrigPos = movingPartRoot.position;
-            previewOrigRot = movingPartRoot.rotation;
+            previewOrigPos = GetGroupRoot(movingPartRoot).position;
+            previewOrigRot = GetGroupRoot(movingPartRoot).rotation;
             previewOrigParent = movingPartRoot.parent;
         }
 
@@ -476,8 +476,8 @@ public class ControlManager : MonoBehaviour
     {
         if (movingPartRoot != null)
         {
-            movingPartRoot.position = previewOrigPos;
-            movingPartRoot.rotation = previewOrigRot;
+            GetGroupRoot(movingPartRoot).position = previewOrigPos;
+            GetGroupRoot(movingPartRoot).rotation = previewOrigRot;
             //if (previewOrigParent != null) movingPartRoot.SetParent(previewOrigParent, true);
             if (clearStored) movingPartRoot = null;
         }
