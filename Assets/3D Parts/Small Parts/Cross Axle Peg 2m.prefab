@@ -82,7 +82,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: c0dee0e304d274b4aabee697dc48e479, type: 2}
     - target: {fileID: 919132149155446097, guid: 71b8a32e24ec2bc4f90bcd8922867d86, type: 3}
       propertyPath: m_Name
-      value: Cross Axle Peg 2M
+      value: Cross Axle Peg 2m
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 71b8a32e24ec2bc4f90bcd8922867d86, type: 3}
       propertyPath: m_Layer
@@ -113,7 +113,8 @@ PrefabInstance:
       value: Axle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: -4071240397897771615, guid: 71b8a32e24ec2bc4f90bcd8922867d86, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 71b8a32e24ec2bc4f90bcd8922867d86, type: 3}

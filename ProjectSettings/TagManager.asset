@@ -10,8 +10,8 @@ TagManager:
   - BlockStart
   - PegHole
   - AxleHole
-  - Peg
   - Axle
+  - Peg
   layers:
   - Default
   - TransparentFX

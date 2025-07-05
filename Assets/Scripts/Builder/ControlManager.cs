@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using TMPro;
 
 public class ControlManager : MonoBehaviour
 {
@@ -86,6 +88,7 @@ public class ControlManager : MonoBehaviour
     }
     void Update()
     {
+        if (IsInputFieldFocused()) return;
         HandleModeHotkeys();
 
         if (currentMode == Mode.Move)
@@ -131,6 +134,14 @@ public class ControlManager : MonoBehaviour
         moveModeButton.interactable = !inMove;
         holesModeButton.interactable = inMove;
     }
+
+    bool IsInputFieldFocused()
+    {
+        var selected = EventSystem.current.currentSelectedGameObject;
+        if (selected == null) return false;
+        return selected.GetComponent<TMP_InputField>() != null;
+    }
+
     /* =============================================================
      *  MODE SWITCHES
      * =============================================================*/
@@ -162,9 +173,17 @@ public class ControlManager : MonoBehaviour
      * =============================================================*/
     void HandleDeletion()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Delete))
+        if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetKeyDown(KeyCode.Delete))
         {
-            Destroy(GetObjectUnderCursor(partsLayer));
+            GameObject hit = GetObjectUnderCursor(partsLayer);
+            if (GetGroupRoot(hit.transform).childCount > 1)
+            {
+                Destroy(hit);
+            }
+            else
+            {
+                Destroy(GetGroupRoot(hit.transform).gameObject);
+            }
         }
     }
 
@@ -297,7 +316,8 @@ public class ControlManager : MonoBehaviour
                 {
                     GameObject hit = GetObjectUnderCursor(holeLayer);
                     if (hit == null || hit == firstHoleGO) break;
-
+                    Debug.Log("smth");
+                    Debug.Log(firstHoleGO.tag + hit.tag);
                     if (AreComplementary(firstHoleGO.tag, hit.tag) && GetGroupRoot(firstHoleGO.transform) != GetGroupRoot(hit.transform))
                     {
                         secondHoleGO = hit;
@@ -313,7 +333,7 @@ public class ControlManager : MonoBehaviour
                         if (hoverHoleRenderer != null && hoverHoleRenderer != firstHoleRenderer)
                             hoverHoleRenderer.enabled = false;
                         hoverHoleRenderer = null;
-
+                        Debug.Log("seond");
                         holeState = HoleState.PreviewAdjust;
                     }
                     else
@@ -349,7 +369,7 @@ public class ControlManager : MonoBehaviour
         firstHoleGO = hole;
         firstHoleRenderer = hole.GetComponent<Renderer>();
         if (firstHoleRenderer) firstHoleRenderer.enabled = true;
-        Debug.Log($"Picked moving part: {hole.name} and group {GetGroupRoot(hole.transform).name}");
+        //Debug.Log($"Picked moving part: {hole.name} and group {GetGroupRoot(hole.transform).name}");
     }
 
     /* =============================================================

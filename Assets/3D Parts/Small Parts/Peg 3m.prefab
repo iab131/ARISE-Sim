@@ -121,6 +121,7 @@ GameObject:
   - component: {fileID: 1773374541838671669}
   - component: {fileID: 2683714886887676556}
   - component: {fileID: 427443860307580946}
+  - component: {fileID: 3890186334272599683}
   m_Layer: 9
   m_Name: Peg 3m
   m_TagString: Untagged
@@ -199,6 +200,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &3890186334272599683
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4450554746173797535}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -640881436400125368, guid: 3223cadd50d504d4abd5620fcd38ccbd, type: 3}
 --- !u!1 &5306751312394758129
 GameObject:
   m_ObjectHideFlags: 0

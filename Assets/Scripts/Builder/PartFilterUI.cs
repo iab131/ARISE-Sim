@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using TMPro; // ← Needed for TMP_InputField
 
 public class PartFilterUI : MonoBehaviour
 {
@@ -12,9 +13,11 @@ public class PartFilterUI : MonoBehaviour
     public Toggle electronicsToggle;
 
     public Transform partListParent; // Parent containing all part UI items
+    public TMP_InputField searchInput; // ← TMP version
 
     private Category currentCategory = Category.All;
     private bool isUpdating = false;
+    private string searchQuery = "";
 
     void Start()
     {
@@ -22,6 +25,9 @@ public class PartFilterUI : MonoBehaviour
         connectorToggle.onValueChanged.AddListener((isOn) => OnToggleChanged(Category.Connector, isOn));
         motionToggle.onValueChanged.AddListener((isOn) => OnToggleChanged(Category.Motion, isOn));
         electronicsToggle.onValueChanged.AddListener((isOn) => OnToggleChanged(Category.Electronics, isOn));
+
+        if (searchInput != null)
+            searchInput.onValueChanged.AddListener(OnSearchChanged);
     }
 
     void OnToggleChanged(Category selected, bool isOn)
@@ -32,14 +38,12 @@ public class PartFilterUI : MonoBehaviour
         {
             currentCategory = selected;
 
-            // Make sure only one toggle is on
             isUpdating = true;
             SetOtherTogglesOff(selected);
             isUpdating = false;
         }
         else
         {
-            // If toggled off while already active, switch to "All"
             if (currentCategory == selected)
                 currentCategory = Category.All;
         }
@@ -55,13 +59,21 @@ public class PartFilterUI : MonoBehaviour
         electronicsToggle.isOn = (except == Category.Electronics);
     }
 
+    void OnSearchChanged(string text)
+    {
+        searchQuery = text.ToLower();
+        FilterPartList();
+    }
+
     void FilterPartList()
     {
         foreach (Transform part in partListParent)
         {
             var item = part.GetComponent<PartItem>();
-            bool shouldShow = (currentCategory == Category.All || item.category == currentCategory);
-            part.gameObject.SetActive(shouldShow);
+            bool matchesCategory = (currentCategory == Category.All || item.category == currentCategory);
+            bool matchesSearch = string.IsNullOrEmpty(searchQuery) || part.name.ToLower().Contains(searchQuery);
+
+            part.gameObject.SetActive(matchesCategory && matchesSearch);
         }
     }
 }
