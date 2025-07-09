@@ -41,6 +41,7 @@ public class ControlManager : MonoBehaviour
 
     private GameObject firstHoleGO;   // ≙ moving part’s hole
     private GameObject secondHoleGO;  // ≙ target hole
+    private Transform hole;
 
     /* =============================================================
      *  PREVIEW BOOK-KEEPING
@@ -48,7 +49,8 @@ public class ControlManager : MonoBehaviour
     private Transform movingPartRoot;
     private Vector3 previewOrigPos;
     private Quaternion previewOrigRot;
-    private Transform previewOrigParent;
+    private Quaternion previewHoleRot;
+
 
     /* =============================================================
      *  DRAGGING
@@ -90,12 +92,12 @@ public class ControlManager : MonoBehaviour
     {
         if (IsInputFieldFocused()) return;
         HandleModeHotkeys();
+        HandleDeletion();
 
         if (currentMode == Mode.Move)
         {
             HandleAxisLockHotkeys();
             HandlePartDragging();
-            HandleDeletion();
         }
         else
         {
@@ -113,7 +115,6 @@ public class ControlManager : MonoBehaviour
         lockedAxis = Axis.None;
         ClearAllHoleState();
         UpdateModeButtons();
-        Debug.Log("Switched to Move Parts Mode");
     }
 
     public void HolesMode()
@@ -122,7 +123,6 @@ public class ControlManager : MonoBehaviour
         holeState = HoleState.SelectingFirst;
         ClearAllHoleState();
         UpdateModeButtons();
-        Debug.Log("Switched to Select Holes Mode");
     }
     private void UpdateModeButtons()
     {
@@ -316,8 +316,7 @@ public class ControlManager : MonoBehaviour
                 {
                     GameObject hit = GetObjectUnderCursor(holeLayer);
                     if (hit == null || hit == firstHoleGO) break;
-                    Debug.Log("smth");
-                    Debug.Log(firstHoleGO.tag + hit.tag);
+
                     if (AreComplementary(firstHoleGO.tag, hit.tag) && GetGroupRoot(firstHoleGO.transform) != GetGroupRoot(hit.transform))
                     {
                         secondHoleGO = hit;
@@ -328,12 +327,23 @@ public class ControlManager : MonoBehaviour
                             firstHoleGO = GetAxlePos(firstHoleGO.transform).gameObject;
                             secondHoleGO = GetAxlePos(secondHoleGO.transform).gameObject;
                         }
+                        if (HasControlHub(firstHoleGO))
+                        {
+                            secondHoleGO = firstHoleGO;
+                            firstHoleGO = hit;
+                        }
+
+                        bool firstIsPeg = IsPeg(firstHoleGO.tag);
+                        bool firstIsHole = IsHole(firstHoleGO.tag);
+                        hole = firstIsHole ? firstHoleGO.transform
+                                             : firstIsPeg ? secondHoleGO.transform : null;
+
                         PreviewSnap(firstHoleGO, secondHoleGO);
 
                         if (hoverHoleRenderer != null && hoverHoleRenderer != firstHoleRenderer)
                             hoverHoleRenderer.enabled = false;
                         hoverHoleRenderer = null;
-                        Debug.Log("seond");
+
                         holeState = HoleState.PreviewAdjust;
                     }
                     else
@@ -382,7 +392,7 @@ public class ControlManager : MonoBehaviour
             movingPartRoot = GetPartRoot(holeA);   // moving part root
             previewOrigPos = GetGroupRoot(movingPartRoot).position;
             previewOrigRot = GetGroupRoot(movingPartRoot).rotation;
-            previewOrigParent = movingPartRoot.parent;
+            previewHoleRot = hole.localRotation;
         }
 
         // move part so holeA meets holeB (no parent change)
@@ -409,8 +419,10 @@ public class ControlManager : MonoBehaviour
     }
     void DestroyUsedHoles()
     {
-        Destroy(firstHoleGO);
-        Destroy(secondHoleGO);
+        if (firstHoleGO.tag != "Axle")
+            Destroy(firstHoleGO);
+        if (secondHoleGO.tag != "Axle")
+            Destroy(secondHoleGO);
     }
     /* =============================================================
      *  PREVIEW ROTATION / FLIP
@@ -424,35 +436,43 @@ public class ControlManager : MonoBehaviour
             return;
 
         // identify which root is peg vs hole
-        bool firstIsPeg = IsPeg(firstHoleGO.tag);
-        bool firstIsHole = IsHole(firstHoleGO.tag);
-
-        Transform pegRoot = firstIsPeg ? GetPartRoot(firstHoleGO)
-                             : IsPeg(secondHoleGO.tag) ? GetPartRoot(secondHoleGO) : null;
-
-        Transform holeRoot = firstIsHole ? GetPartRoot(firstHoleGO)
-                             : IsHole(secondHoleGO.tag) ? GetPartRoot(secondHoleGO) : null;
-
+        
         bool changed = false;
-
+        Debug.Log(hole);
         /* ── arrow keys rotate the HOLE piece 90° ─────────────────── */
-        if (holeRoot != null)
+        if (hole != null)
         {
-            if (Input.GetKeyDown(KeyCode.UpArrow)) { holeRoot.Rotate(Vector3.right, 90f, Space.Self); changed = true; }
-            if (Input.GetKeyDown(KeyCode.DownArrow)) { holeRoot.Rotate(Vector3.right, -90f, Space.Self); changed = true; }
-            if (Input.GetKeyDown(KeyCode.LeftArrow)) { holeRoot.Rotate(Vector3.forward, 90f, Space.Self); changed = true; }
-            if (Input.GetKeyDown(KeyCode.RightArrow)) { holeRoot.Rotate(Vector3.forward, -90f, Space.Self); changed = true; }
+            Vector3 pivot = hole.transform.position;
+            Vector3 axis = hole.transform.up;
+         
+            // make axis move up and down
+            //if (Input.GetKeyDown(KeyCode.UpArrow)) { holeRoot.Rotate(Vector3.forward, 90f, Space.Self); changed = true; }
+            //if (Input.GetKeyDown(KeyCode.DownArrow)) { holeRoot.Rotate(Vector3.forward, -90f, Space.Self); changed = true; }
+            if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+                hole.RotateAround(pivot, axis, 45f);
+                SnapPartToHole(GetGroupRoot(movingPartRoot),
+                                   firstHoleGO.transform,
+                                   secondHoleGO.transform,
+                                   false);
+            }
+            if (Input.GetKeyDown(KeyCode.RightArrow)) {
+                hole.RotateAround(pivot, axis, -45f);
+                SnapPartToHole(GetGroupRoot(movingPartRoot),
+                                   firstHoleGO.transform,
+                                   secondHoleGO.transform,
+                                   false);
+            }
         }
 
         /* ---- F = end-over-end flip of the PEG / AXLE piece ---- */
         if (Input.GetKeyDown(KeyCode.F))
         {
-            Transform pegHole = (firstHoleGO.CompareTag("PegHole") || firstHoleGO.CompareTag("AxleHole"))
+            Transform pegHole = (firstHoleGO.CompareTag("PegHole") || firstHoleGO.CompareTag("AxleHole") || firstHoleGO.name.Contains("Axle"))
                         ? firstHoleGO.transform
-                        : (secondHoleGO.CompareTag("PegHole") || secondHoleGO.CompareTag("AxleHole"))
+                        : (secondHoleGO.CompareTag("PegHole") || secondHoleGO.CompareTag("AxleHole") || secondHoleGO.name.Contains("Axle"))
                           ? secondHoleGO.transform
                           : null;
-
+ 
             if (pegHole != null)
             {
                 
@@ -460,7 +480,6 @@ public class ControlManager : MonoBehaviour
                 Vector3 axis = pegHole.transform.right;    // local-Right  ⟂ peg axis
 
                 pegHole.RotateAround(pivot, axis, 180f);
-
 
                 /* 3│ re-snap so holeA aligns perfectly with holeB */
                 SnapPartToHole(GetGroupRoot(movingPartRoot),
@@ -498,7 +517,7 @@ public class ControlManager : MonoBehaviour
         {
             GetGroupRoot(movingPartRoot).position = previewOrigPos;
             GetGroupRoot(movingPartRoot).rotation = previewOrigRot;
-            //if (previewOrigParent != null) movingPartRoot.SetParent(previewOrigParent, true);
+            hole.localRotation = previewHoleRot;
             if (clearStored) movingPartRoot = null;
         }
     }
@@ -514,7 +533,16 @@ public class ControlManager : MonoBehaviour
                (a == "PegHole" && b == "Peg");
     }
 
-    //Transform GetPartRoot(GameObject holeObj) => holeObj.transform.parent;
+    bool HasControlHub(GameObject selected)
+    {
+        Transform group = GetGroupRoot(selected.transform);
+        foreach (Transform child in group)
+        {
+            if (child.name == "ControlHub")
+                return true;
+        }
+        return false;
+    }
     Transform GetPartRoot(GameObject holeObj)
     {
         Transform t = holeObj.transform;
@@ -554,6 +582,19 @@ public class ControlManager : MonoBehaviour
 
         // No matching child found — return the original root
         return root;
+    }
+
+    Transform GetRotatingHub(Transform hole)
+    {
+        for (int i = 0; i < 4 && hole.parent != null; i++)
+        {
+            if (hole.gameObject.name == "MotorHub")
+                return hole;
+
+            hole = hole.parent;
+        }
+
+        return null;
     }
 
     void SnapPartToHole(
@@ -626,10 +667,10 @@ public class ControlManager : MonoBehaviour
         partRoot.transform.SetParent(spawnRoot);
 
         // Spawn the actual part as a child of the container
-        GameObject part = Instantiate(prefab, partRoot.transform,partRoot);
+        GameObject part = Instantiate(prefab, partRoot.transform.position, Quaternion.identity, partRoot.transform);
         part.transform.localPosition = Vector3.zero;
-        part.transform.localRotation = Quaternion.identity;
-
+        part.transform.localRotation = prefab.transform.localRotation;
+        part.transform.localScale = new Vector3(100,100,100);
         draggedPart = partRoot;
         // pretend they clicked the group’s origin
         Vector3 hitPoint = partRoot.transform.position;
@@ -659,40 +700,54 @@ public class ControlManager : MonoBehaviour
 
     void MergeGroup(Transform mover, Transform root)
     {
-        Transform groupA = mover.parent;
-        Transform groupB = root.parent;
-
-        if (groupA == groupB)     // already one group
+        Transform rotatingHub = GetRotatingHub(mover);
+        Transform group = GetGroupRoot(root);
+        if (rotatingHub == null)
         {
-            Debug.LogWarning("Cannot merge a group into itself.");
-            return;
+            group = GetGroupRoot(mover);
+            rotatingHub = GetRotatingHub(root);
         }
 
-        int countA = groupA.childCount;
-        int countB = groupB.childCount;
+        if (rotatingHub == null) //not motor
+        { 
+            Transform groupA = GetGroupRoot(mover);
+            Transform groupB = GetGroupRoot(root);
 
-        Transform target = (countA >= countB) ? groupA : groupB;
-        Transform donor = (target == groupA) ? groupB : groupA;
+            int countA = groupA.childCount;
+            int countB = groupB.childCount;
 
-        // ── Move children from donor → target (keep world pose) ─────
-        List<Transform> toMove = new List<Transform>();
-        foreach (Transform child in donor) toMove.Add(child);
+            Transform target = (countA >= countB) ? groupA : groupB;
+            Transform donor = (target == groupA) ? groupB : groupA;
 
-        foreach (Transform child in toMove)
-            child.SetParent(target, true);   // true = keep world position
+            // ── Move children from donor → target (keep world pose) ─────
+            List<Transform> toMove = new List<Transform>();
+            foreach (Transform child in donor) toMove.Add(child);
 
-        Destroy(donor.gameObject);           // remove empty donor
+            foreach (Transform child in toMove)
+                child.SetParent(target, true);   // true = keep world position
 
-        // ── Re-anchor so first child is at local (0,0,0) ─────────────
-        if (target.childCount > 0)
+            Destroy(donor.gameObject);           // remove empty donor
+
+            // ── Re-anchor so first child is at local (0,0,0) ─────────────
+            if (target.childCount > 0)
+            {
+                Transform anchor = target.GetChild(0);
+                Vector3 offset = anchor.localPosition;
+
+                foreach (Transform child in target)
+                    child.localPosition -= offset;
+
+                target.position += offset;       // keep world position identical
+            }
+        }
+        else
         {
-            Transform anchor = target.GetChild(0);
-            Vector3 offset = anchor.localPosition;
+            List<Transform> toMove = new List<Transform>();
+            foreach (Transform child in group) toMove.Add(child);
 
-            foreach (Transform child in target)
-                child.localPosition -= offset;
-
-            target.position += offset;       // keep world position identical
+            foreach (Transform child in toMove)
+                child.SetParent(rotatingHub, true);
+            Destroy(group.gameObject);
         }
     }
 }
