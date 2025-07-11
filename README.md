@@ -1,4 +1,4 @@
-<h1>🌟 FLL Simulator</h1>
+<img width="2147" height="1173" alt="image" src="https://github.com/user-attachments/assets/06461800-e0de-4200-a051-f1083df6b81e" /><h1>🌟 FLL Simulator</h1>
 <h3><em>Build. Code. Simulate. Explore.</em></h3>
 
 <p>
@@ -69,5 +69,9 @@ We built this simulator as a team of two students to make robotics more <strong>
 <h2>📬 Contact</h2>
 <p>
 Have ideas, feedback, or want to collaborate?<br>
-Feel free to <a href="https://github.com/yourusername/fll-simulator/issues">open an issue</a> or reach out to either of us through GitHub or LinkedIn.
+Feel free to reach out to either of us through GitHub or LinkedIn.
+<ul>
+  <li><a href="https://github.com/UdulaAbeykoon">Udula Abeykoon</a></li>
+  <li><a href="https://github.com/iab131">Enhe Bai</a></li>
+</ul>
 </p>
