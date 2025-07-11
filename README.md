@@ -37,7 +37,7 @@ Run your robot in AR using your device’s camera for an interactive, real-world
 
 <h2>💡 Why FLL Simulator?</h2>
 <p>
-I built this simulator to make robotics more <strong>accessible</strong>, <strong>engaging</strong>, and <strong>fun</strong>, especially for students who don’t have access to real-world kits. Inspired by my experience in <strong>FIRST Tech Challenge (FTC)</strong>, I wanted to give back and create a tool that helps younger students explore robotics in a meaningful way.
+We built this simulator as a team of two students to make robotics more <strong>accessible</strong>, <strong>engaging</strong>, and <strong>fun</strong> — especially for younger students who don’t have access to physical kits. Inspired by our experience in <strong>FIRST Tech Challenge (FTC)</strong>, we wanted to give back to the community and help spark curiosity in STEM through a hands-on, interactive learning platform.
 </p>
 
 <hr>
@@ -62,12 +62,12 @@ I built this simulator to make robotics more <strong>accessible</strong>, <stron
 <hr>
 
 <h2>🚧 Status</h2>
-<p>This is a work-in-progress project. Feedback and contributions are welcome!</p>
+<p>This is a work-in-progress team project. Feedback and contributions are welcome!</p>
 
 <hr>
 
 <h2>📬 Contact</h2>
 <p>
 Have ideas, feedback, or want to collaborate?<br>
-Feel free to reach out via email or LinkedIn.
+Feel free to <a href="https://github.com/yourusername/fll-simulator/issues">open an issue</a> or reach out to either of us through GitHub or LinkedIn.
 </p>
