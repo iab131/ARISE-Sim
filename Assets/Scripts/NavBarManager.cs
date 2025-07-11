@@ -44,6 +44,7 @@ public class NavBarController : MonoBehaviour
         SetActiveView(buildingRoot, false);
         SetActiveView(simulationRoot, false);
         SetActiveView(arRoot, false);
+        MotorLabelManager.Instance.SetAssignMode(false);
     }
 
     public void ShowBuilding()
@@ -53,6 +54,7 @@ public class NavBarController : MonoBehaviour
         SetActiveView(buildingRoot, true);
         SetActiveView(simulationRoot, false);
         SetActiveView(arRoot, false);
+        MotorLabelManager.Instance.SetAssignMode(false);
     }
 
     public void ShowSimulation()
@@ -62,6 +64,7 @@ public class NavBarController : MonoBehaviour
         SetActiveView(buildingRoot, false);
         SetActiveView(simulationRoot, true);
         SetActiveView(arRoot, false);
+        MotorLabelManager.Instance.SetAssignMode(false);
     }
 
     public void ShowAR()
@@ -71,6 +74,7 @@ public class NavBarController : MonoBehaviour
         SetActiveView(buildingRoot, false);
         SetActiveView(simulationRoot, false);
         SetActiveView(arRoot, true);
+        MotorLabelManager.Instance.SetAssignMode(false);
     }
 
     private void SetActiveView(GameObject obj, bool active)

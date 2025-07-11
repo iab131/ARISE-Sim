@@ -767,6 +767,7 @@ GameObject:
   - component: {fileID: 8101474317855854970}
   - component: {fileID: 6286403710043013324}
   - component: {fileID: 1341963620790041509}
+  - component: {fileID: 129923686945466728}
   m_Layer: 9
   m_Name: ControlHub 1
   m_TagString: Untagged
@@ -889,6 +890,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &129923686945466728
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1614322053396086483}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 5.5899987, y: 3.196366, z: 8.7725}
+  m_Center: {x: -0.00000023841858, y: 1.5981823, z: 0.00016593933}
 --- !u!1 &2021139245483147474
 GameObject:
   m_ObjectHideFlags: 0

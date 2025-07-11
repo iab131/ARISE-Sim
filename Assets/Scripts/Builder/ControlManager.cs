@@ -90,7 +90,7 @@ public class ControlManager : MonoBehaviour
     }
     void Update()
     {
-        if (IsInputFieldFocused()) return;
+        if (IsInputFieldFocused() || MotorLabelManager.Instance.IsModalOpen) return;
         HandleModeHotkeys();
         HandleDeletion();
 
@@ -115,6 +115,7 @@ public class ControlManager : MonoBehaviour
         lockedAxis = Axis.None;
         ClearAllHoleState();
         UpdateModeButtons();
+        MotorLabelManager.Instance.SetAssignMode(false);
     }
 
     public void HolesMode()
@@ -123,6 +124,7 @@ public class ControlManager : MonoBehaviour
         holeState = HoleState.SelectingFirst;
         ClearAllHoleState();
         UpdateModeButtons();
+        MotorLabelManager.Instance.SetAssignMode(false);
     }
     private void UpdateModeButtons()
     {
@@ -335,8 +337,7 @@ public class ControlManager : MonoBehaviour
 
                         bool firstIsPeg = IsPeg(firstHoleGO.tag);
                         bool firstIsHole = IsHole(firstHoleGO.tag);
-                        hole = firstIsHole ? firstHoleGO.transform
-                                             : firstIsPeg ? secondHoleGO.transform : null;
+                        hole = firstIsHole ? firstHoleGO.transform : secondHoleGO.transform;
 
                         PreviewSnap(firstHoleGO, secondHoleGO);
 
@@ -437,8 +438,7 @@ public class ControlManager : MonoBehaviour
 
         // identify which root is peg vs hole
         
-        bool changed = false;
-        Debug.Log(hole);
+        //bool changed = false;
         /* ── arrow keys rotate the HOLE piece 90° ─────────────────── */
         if (hole != null)
         {
