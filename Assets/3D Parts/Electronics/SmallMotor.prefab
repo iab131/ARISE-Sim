@@ -1548,7 +1548,7 @@ GameObject:
   - component: {fileID: 8469495875302650638}
   m_Layer: 8
   m_Name: SnapCircle.004
-  m_TagString: PegHole
+  m_TagString: AxleHole
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2602,7 +2602,7 @@ GameObject:
   - component: {fileID: 8517569295616015833}
   m_Layer: 8
   m_Name: SnapCircle.021
-  m_TagString: PegHole
+  m_TagString: AxleHole
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

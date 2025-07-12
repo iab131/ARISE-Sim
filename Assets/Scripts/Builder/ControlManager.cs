@@ -329,7 +329,7 @@ public class ControlManager : MonoBehaviour
                             firstHoleGO = GetAxlePos(firstHoleGO.transform).gameObject;
                             secondHoleGO = GetAxlePos(secondHoleGO.transform).gameObject;
                         }
-                        if (HasControlHub(firstHoleGO))
+                        if (HasControlHub(firstHoleGO.transform))
                         {
                             secondHoleGO = firstHoleGO;
                             firstHoleGO = hit;
@@ -414,17 +414,10 @@ public class ControlManager : MonoBehaviour
             () =>
             {
                 MergeGroup(moverRoot, targetRoot);
-                DestroyUsedHoles();
                 ClearAllHoleState();
             });
     }
-    void DestroyUsedHoles()
-    {
-        if (firstHoleGO.tag != "Axle")
-            Destroy(firstHoleGO);
-        if (secondHoleGO.tag != "Axle")
-            Destroy(secondHoleGO);
-    }
+
     /* =============================================================
      *  PREVIEW ROTATION / FLIP
      * =============================================================*/
@@ -533,9 +526,9 @@ public class ControlManager : MonoBehaviour
                (a == "PegHole" && b == "Peg");
     }
 
-    bool HasControlHub(GameObject selected)
+    bool HasControlHub(Transform selected)
     {
-        Transform group = GetGroupRoot(selected.transform);
+        Transform group = GetGroupRoot(selected);
         foreach (Transform child in group)
         {
             if (child.name == "ControlHub")
@@ -702,22 +695,26 @@ public class ControlManager : MonoBehaviour
     {
         Transform rotatingHub = GetRotatingHub(mover);
         Transform group = GetGroupRoot(root);
-        if (rotatingHub == null)
-        {
-            group = GetGroupRoot(mover);
-            rotatingHub = GetRotatingHub(root);
-        }
 
         if (rotatingHub == null) //not motor
         { 
             Transform groupA = GetGroupRoot(mover);
             Transform groupB = GetGroupRoot(root);
+            Transform target, donor;
+            bool AHasHub = HasControlHub(groupA);
+            bool BHasHub = HasControlHub(groupB);
 
-            int countA = groupA.childCount;
-            int countB = groupB.childCount;
-
-            Transform target = (countA >= countB) ? groupA : groupB;
-            Transform donor = (target == groupA) ? groupB : groupA;
+            if (AHasHub || BHasHub)  // has control hub, so target is controlhub
+            {
+                target = AHasHub ? groupA : groupB;
+                donor = AHasHub ? groupB : groupA;
+            }
+            else
+            {
+                target = (groupA.childCount >= groupB.childCount) ? groupA : groupB;
+                donor = (target == groupA) ? groupB : groupA;
+            }
+            
 
             // ── Move children from donor → target (keep world pose) ─────
             List<Transform> toMove = new List<Transform>();
