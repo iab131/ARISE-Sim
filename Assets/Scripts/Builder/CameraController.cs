@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 public class CameraControl : MonoBehaviour
 {
     public GameObject parentModel;
-
+    public static CameraControl Instance { get; private set; }
     [Header("Sensitivity Settings")]
     [SerializeField] private float rotationSpeed = 1000f;
     [SerializeField] private float zoomSpeed = 10f;
@@ -18,7 +18,15 @@ public class CameraControl : MonoBehaviour
     [SerializeField] private float defaultFieldOfView = 60f;
 
     private Vector3 mouseWorldPosStart;
-
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
     void Update()
     {
         if (Input.GetMouseButton(1)) // Right click to orbit

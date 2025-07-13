@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
+using Unity.VisualScripting;
 
 public class ControlManager : MonoBehaviour
 {
@@ -51,6 +52,12 @@ public class ControlManager : MonoBehaviour
     private Quaternion previewOrigRot;
     private Quaternion previewHoleRot;
 
+    /* =============================================================
+     *  GIZMO
+     * =============================================================*/
+    private Renderer unitRenderer;
+    private float unitDistance;
+
 
     /* =============================================================
      *  DRAGGING
@@ -68,16 +75,22 @@ public class ControlManager : MonoBehaviour
     public Transform spawnRoot;
     [SerializeField] private float spawnDistance;
     [SerializeField] private ScrollRect blockPaletteScrollRect;
-    private Boolean isSpawn = false;
-
+    private bool isSpawn = false;
+    
     [Header("Mode UI")]
     [SerializeField] private Button moveModeButton;
     [SerializeField] private Button holesModeButton;
+    public GameObject unitSizeReference; // Assign in Inspector
 
 
     /* ─────────────────────────────────────────────────────────── */
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
 
         if (moveModeButton != null)
@@ -88,10 +101,16 @@ public class ControlManager : MonoBehaviour
 
         UpdateModeButtons();
     }
+    private void Start()
+    {
+        unitRenderer = unitSizeReference.GetComponent<Renderer>();
+        unitDistance = unitRenderer.bounds.size.x / 2; // Use X, Y, or Z as needed
+    }
     void Update()
     {
         if (IsInputFieldFocused() || MotorLabelManager.Instance.IsModalOpen) return;
         HandleModeHotkeys();
+        HandleDuplication();
         HandleDeletion();
 
         if (currentMode == Mode.Move)
@@ -178,15 +197,53 @@ public class ControlManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetKeyDown(KeyCode.Delete))
         {
             GameObject hit = GetObjectUnderCursor(partsLayer);
-            if (GetGroupRoot(hit.transform).childCount > 1)
+            if (hit != null)
             {
-                Destroy(hit);
-            }
-            else
-            {
-                Destroy(GetGroupRoot(hit.transform).gameObject);
+                if (GetGroupRoot(hit.transform).childCount > 1)
+                {
+                    Destroy(hit);
+                }
+                else
+                {
+                    Destroy(GetGroupRoot(hit.transform).gameObject);
+                }
             }
         }
+    }
+
+    void HandleDuplication()
+    {
+        if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) &&
+            Input.GetKeyDown(KeyCode.D))
+        {
+            GameObject hit = GetObjectUnderCursor(partsLayer);
+            if (hit != null)
+            {
+                Transform root = GetGroupRoot(hit.transform);
+                GameObject duplicate = Instantiate(root.gameObject,root.parent);
+
+                // Calculate bounds
+                Bounds bounds = GetTotalBounds(duplicate);
+                Vector3 offset = new Vector3(bounds.size.x + 25f, 0f, 0f); // Only X-axis
+
+                duplicate.transform.position = root.position + offset;
+
+            }
+        }
+    }
+
+    Bounds GetTotalBounds(GameObject go)
+    {
+        Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
+        if (renderers.Length == 0)
+            return new Bounds(go.transform.position, Vector3.zero);
+
+        Bounds bounds = renderers[0].bounds;
+        for (int i = 1; i < renderers.Length; i++)
+        {
+            bounds.Encapsulate(renderers[i].bounds);
+        }
+        return bounds;
     }
 
     /* =============================================================
@@ -322,6 +379,9 @@ public class ControlManager : MonoBehaviour
                     if (AreComplementary(firstHoleGO.tag, hit.tag) && GetGroupRoot(firstHoleGO.transform) != GetGroupRoot(hit.transform))
                     {
                         secondHoleGO = hit;
+                        bool firstIsPeg = IsPeg(firstHoleGO.tag);
+                        bool firstIsHole = IsHole(firstHoleGO.tag);
+                        hole = firstIsHole ? firstHoleGO.transform : secondHoleGO.transform;
 
                         // check if axle
                         if (firstHoleGO.CompareTag("Axle") || secondHoleGO.CompareTag("Axle"))
@@ -335,15 +395,15 @@ public class ControlManager : MonoBehaviour
                             firstHoleGO = hit;
                         }
 
-                        bool firstIsPeg = IsPeg(firstHoleGO.tag);
-                        bool firstIsHole = IsHole(firstHoleGO.tag);
-                        hole = firstIsHole ? firstHoleGO.transform : secondHoleGO.transform;
-
+                        
                         PreviewSnap(firstHoleGO, secondHoleGO);
 
                         if (hoverHoleRenderer != null && hoverHoleRenderer != firstHoleRenderer)
                             hoverHoleRenderer.enabled = false;
                         hoverHoleRenderer = null;
+
+                        //gizmo
+                        //GizmoManager.Instance.ShowHandles(hole.gameObject);
 
                         holeState = HoleState.PreviewAdjust;
                     }
@@ -358,7 +418,9 @@ public class ControlManager : MonoBehaviour
             case HoleState.PreviewAdjust:
                 HandlePreviewRotationKeys();
 
-                if (IsCancelPressed()) { CancelPreview(true); ClearAllHoleState(); break; }
+                if (IsCancelPressed()) { CancelPreview(true); ClearAllHoleState(); 
+                    //GizmoManager.Instance.ClearHandles(); 
+                    break; }
                 if (IsConfirmPressed()) { CommitSnap(); break; }
                 break;
         }
@@ -429,63 +491,82 @@ public class ControlManager : MonoBehaviour
         if (firstHoleGO == null || secondHoleGO == null || movingPartRoot == null)
             return;
 
-        // identify which root is peg vs hole
         
-        //bool changed = false;
-        /* ── arrow keys rotate the HOLE piece 90° ─────────────────── */
         if (hole != null)
         {
-            Vector3 pivot = hole.transform.position;
-            Vector3 axis = hole.transform.up;
-         
-            // make axis move up and down
-            //if (Input.GetKeyDown(KeyCode.UpArrow)) { holeRoot.Rotate(Vector3.forward, 90f, Space.Self); changed = true; }
-            //if (Input.GetKeyDown(KeyCode.DownArrow)) { holeRoot.Rotate(Vector3.forward, -90f, Space.Self); changed = true; }
+
+            // make axis move up and down if axle
+            if (hole.tag.Contains("Axle") || hole.name.Contains("Axle"))
+            {
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    MoveHoleAlongAxis(1);
+                }
+
+                if (Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    MoveHoleAlongAxis(-1);
+                }
+            }
+
+            //rotation
             if (Input.GetKeyDown(KeyCode.LeftArrow)) {
-                hole.RotateAround(pivot, axis, 45f);
-                SnapPartToHole(GetGroupRoot(movingPartRoot),
-                                   firstHoleGO.transform,
-                                   secondHoleGO.transform,
-                                   false);
+                RotateHoleAroundAxis("up", 45f);
+                
             }
             if (Input.GetKeyDown(KeyCode.RightArrow)) {
-                hole.RotateAround(pivot, axis, -45f);
-                SnapPartToHole(GetGroupRoot(movingPartRoot),
-                                   firstHoleGO.transform,
-                                   secondHoleGO.transform,
-                                   false);
+                RotateHoleAroundAxis("up", -45f);
             }
         }
 
         /* ---- F = end-over-end flip of the PEG / AXLE piece ---- */
         if (Input.GetKeyDown(KeyCode.F))
         {
-            Transform pegHole = (firstHoleGO.CompareTag("PegHole") || firstHoleGO.CompareTag("AxleHole") || firstHoleGO.name.Contains("Axle"))
-                        ? firstHoleGO.transform
-                        : (secondHoleGO.CompareTag("PegHole") || secondHoleGO.CompareTag("AxleHole") || secondHoleGO.name.Contains("Axle"))
-                          ? secondHoleGO.transform
-                          : null;
- 
-            if (pegHole != null)
+            if (hole != null)
             {
+                RotateHoleAroundAxis("right", 180f, true);
                 
-                Vector3 pivot = pegHole.transform.position; // hole centre
-                Vector3 axis = pegHole.transform.right;    // local-Right  ⟂ peg axis
-
-                pegHole.RotateAround(pivot, axis, 180f);
-
-                /* 3│ re-snap so holeA aligns perfectly with holeB */
-                SnapPartToHole(GetGroupRoot(movingPartRoot),
-                               firstHoleGO.transform,
-                               secondHoleGO.transform,
-                               true);   // instant, no animation
             }
         }
     }
 
+    public void MoveHoleAlongAxis(int direction)
+    {
+        Vector3 axis = hole.up;
+        hole.position += axis * unitDistance * direction;
+        SnapPartToHole(GetGroupRoot(movingPartRoot),
+                           firstHoleGO.transform,
+                           secondHoleGO.transform,
+                           false);
+    }
 
+    public void RotateHoleAroundAxis(string type, float angle, bool Animation = false)
+    {
+        Vector3 pivot = hole.position;
+        Vector3 axis = Vector3.up; 
 
+        switch (type.ToLower())
+        {
+            case "right":
+                Transform pegHole = (firstHoleGO.CompareTag("PegHole") || firstHoleGO.CompareTag("AxleHole") || firstHoleGO.name.Contains("Axle"))
+                       ? firstHoleGO.transform
+                       : (secondHoleGO.CompareTag("PegHole") || secondHoleGO.CompareTag("AxleHole") || secondHoleGO.name.Contains("Axle"))
+                         ? secondHoleGO.transform
+                         : null;
+                pivot = pegHole.position;
+                axis = hole.right;
+                break;
+            case "up":
+                axis = hole.up;
+                break;
+        }
+        hole.RotateAround(pivot, axis, angle);
 
+        SnapPartToHole(GetGroupRoot(movingPartRoot),
+                               firstHoleGO.transform,
+                               secondHoleGO.transform,
+                               Animation);
+    }
 
     /* =============================================================
      *  CANCEL / RESET

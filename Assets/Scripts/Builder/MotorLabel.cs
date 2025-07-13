@@ -19,17 +19,19 @@ public class MotorLabel : MonoBehaviour
 
     [Header("Animation")]
     [SerializeField] private Vector3 baseOffset = new(0, 1.1f, 0);  // world-up offset
-    [SerializeField] private float extraFloat = 2f;
-    [SerializeField] private float floatAmp = .4f;
+    [SerializeField] private float extraFloat = 150f;
+    [SerializeField] private float floatAmp = 25f;
     [SerializeField] private float floatSpeed = 2f;
-    [SerializeField] private float spinSpeed = 50f;
-    [SerializeField] private float hoverScale = 1.15f;
+    [SerializeField] private float spinSpeed = 20f;
+    [SerializeField] private float hoverScale = 1.3f;
     [SerializeField] private float scaleLerpSpeed = 10f;
 
     [Header("Collision")]
-    [SerializeField] private LayerMask collisionMask = ~0;
-    [SerializeField] private float stepUp = .1f;
+    [SerializeField] private LayerMask collisionMask = 1 << 9;
+    [SerializeField] private float stepUp = 20f;
     [SerializeField] private BoxCollider brickCol;
+    private float clearance = 40f;   // 2 cm; tweak in Inspector
+
 
     // ───────── Runtime ─────────
     private bool isHovered;
@@ -83,13 +85,15 @@ public class MotorLabel : MonoBehaviour
         float probeY = transform.position.y + baseOffset.y;
         float travelled = 0f;
 
+        
         while (true)
         {
             Vector3 probePos = new(transform.position.x, probeY, transform.position.z);
             labelBrick.transform.SetPositionAndRotation(probePos, Quaternion.identity);
 
             Bounds b = brickCol.bounds;
-            bool hit = Physics.CheckBox(b.center, b.extents, Quaternion.identity,
+            Vector3 halfExt = b.extents + Vector3.one * clearance;
+            bool hit = Physics.CheckBox(b.center, halfExt, Quaternion.identity,
                                         collisionMask, QueryTriggerInteraction.Ignore);
             if (!hit) break;
 
