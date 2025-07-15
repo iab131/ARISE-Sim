@@ -17,6 +17,8 @@ public class NavBarController : MonoBehaviour
     [Header("2D UI Panel (Block Coding Only)")]
     public GameObject blockCodingUIPanel;
     public GameObject buildingUIPanel;
+    public GameObject simulationUIPanel;
+    public GameObject arUIPanel;
 
     [Header("3D Panels / Root Objects")]
     public GameObject buildingRoot;
@@ -41,10 +43,12 @@ public class NavBarController : MonoBehaviour
     {
         SetActiveView(blockCodingUIPanel, true);
         SetActiveView(buildingUIPanel, false);
+        SetActiveView(simulationUIPanel, false);
+        SetActiveView(arUIPanel, false);
         SetActiveView(buildingRoot, false);
         SetActiveView(simulationRoot, false);
         SetActiveView(arRoot, false);
-        MotorLabelManager.Instance.SetAssignMode(false);
+        MotorLabelManager.Instance?.SetAssignMode(false);
     }
 
     public void ShowBuilding()
@@ -54,17 +58,21 @@ public class NavBarController : MonoBehaviour
         SetActiveView(buildingRoot, true);
         SetActiveView(simulationRoot, false);
         SetActiveView(arRoot, false);
-        MotorLabelManager.Instance.SetAssignMode(false);
+        SetActiveView(simulationUIPanel, false);
+        SetActiveView(arUIPanel, false);
+        MotorLabelManager.Instance?.SetAssignMode(false);
     }
 
     public void ShowSimulation()
     {
         SetActiveView(blockCodingUIPanel, false);
         SetActiveView(buildingUIPanel, false);
+        SetActiveView(simulationUIPanel, true);
+        SetActiveView(arUIPanel, false);
         SetActiveView(buildingRoot, false);
         SetActiveView(simulationRoot, true);
         SetActiveView(arRoot, false);
-        MotorLabelManager.Instance.SetAssignMode(false);
+        MotorLabelManager.Instance?.SetAssignMode(false);
     }
 
     public void ShowAR()
@@ -73,8 +81,10 @@ public class NavBarController : MonoBehaviour
         SetActiveView(buildingUIPanel, false);
         SetActiveView(buildingRoot, false);
         SetActiveView(simulationRoot, false);
+        SetActiveView(simulationUIPanel, false);
+        SetActiveView(arUIPanel, true);
         SetActiveView(arRoot, true);
-        MotorLabelManager.Instance.SetAssignMode(false);
+        MotorLabelManager.Instance?.SetAssignMode(false);
     }
 
     private void SetActiveView(GameObject obj, bool active)
