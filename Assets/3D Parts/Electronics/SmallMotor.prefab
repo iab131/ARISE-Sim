@@ -1656,6 +1656,7 @@ GameObject:
   - component: {fileID: 2600352867852666869}
   - component: {fileID: 8209314071745475843}
   - component: {fileID: 4031873421666928990}
+  - component: {fileID: 3549044718759852214}
   m_Layer: 9
   m_Name: MotorHub
   m_TagString: Untagged
@@ -1762,7 +1763,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 0
   m_IsKinematic: 1
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
 --- !u!59 &4031873421666928990
@@ -1804,6 +1805,18 @@ HingeJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &3549044718759852214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2810005831623262564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af4a47981a857a54a9ec6dce62523aa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2954001026614723561
 GameObject:
   m_ObjectHideFlags: 0
@@ -3620,6 +3633,7 @@ GameObject:
   - component: {fileID: 203861554422694982}
   - component: {fileID: 4204609334848626402}
   - component: {fileID: 8072117849262525655}
+  - component: {fileID: -8622547309054126587}
   m_Layer: 9
   m_Name: SmallMotor
   m_TagString: Untagged
@@ -3637,7 +3651,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 1265.586, y: 565.2296, z: -182.82097}
-  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3342187264384938683}
@@ -3739,9 +3753,9 @@ MonoBehaviour:
   - {fileID: 6031691121531943556}
   - {fileID: 8326406898143602233}
   - {fileID: 6941167038378377043}
-  baseOffset: {x: 0, y: 1.1, z: 0}
-  extraFloat: 150
-  floatAmp: 25
+  baseOffset: {x: 0, y: 1, z: 0}
+  extraFloat: 1
+  floatAmp: 0.25
   floatSpeed: 2
   spinSpeed: 20
   hoverScale: 1.3
@@ -3749,8 +3763,9 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 512
-  stepUp: 20
+  stepUp: 0.1
   brickCol: {fileID: 6087712838589694608}
+  clearance: 0.4
 --- !u!54 &8072117849262525655
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3776,8 +3791,20 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 14
-  m_CollisionDetection: 0
+  m_Constraints: 0
+  m_CollisionDetection: 1
+--- !u!114 &-8622547309054126587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8474215743446851664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af4a47981a857a54a9ec6dce62523aa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3402984354646539045
 PrefabInstance:
   m_ObjectHideFlags: 0

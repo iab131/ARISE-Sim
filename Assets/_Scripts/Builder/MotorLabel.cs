@@ -30,7 +30,7 @@ public class MotorLabel : MonoBehaviour
     [SerializeField] private LayerMask collisionMask = 1 << 9;
     [SerializeField] private float stepUp = 20f;
     [SerializeField] private BoxCollider brickCol;
-    private float clearance = 40f;   // 2 cm; tweak in Inspector
+    [SerializeField] private float clearance = .4f;   // 2 cm; tweak in Inspector
 
 
     // ───────── Runtime ─────────
@@ -38,7 +38,7 @@ public class MotorLabel : MonoBehaviour
     private float baseY;                   // world-space offset after clearance
     private float spinAngle;
     private Vector3 startScale, targetScale;
-    private static int _nextIndex = 0;   // shared by all instances
+    private static int _nextIndex = 1;   // shared by all instances
     public int MotorIndex { get; private set; }
     public char MotorLetter { get; private set; }
 

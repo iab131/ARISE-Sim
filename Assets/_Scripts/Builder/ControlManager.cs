@@ -224,7 +224,7 @@ public class ControlManager : MonoBehaviour
 
                 // Calculate bounds
                 Bounds bounds = GetTotalBounds(duplicate);
-                Vector3 offset = new Vector3(bounds.size.x + 25f, 0f, 0f); // Only X-axis
+                Vector3 offset = new Vector3(bounds.size.x + .25f, 0f, 0f); // Only X-axis
 
                 duplicate.transform.position = root.position + offset;
 
@@ -744,7 +744,7 @@ public class ControlManager : MonoBehaviour
         GameObject part = Instantiate(prefab, partRoot.transform.position, Quaternion.identity, partRoot.transform);
         part.transform.localPosition = Vector3.zero;
         part.transform.localRotation = prefab.transform.localRotation;
-        part.transform.localScale = new Vector3(100,100,100);
+        part.transform.localScale = new Vector3(1,1,1);
         draggedPart = partRoot;
         // pretend they clicked the group’s origin
         Vector3 hitPoint = partRoot.transform.position;

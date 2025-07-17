@@ -1342,6 +1342,7 @@ GameObject:
   - component: {fileID: 7780758158003764082}
   - component: {fileID: 4075673756560049235}
   - component: {fileID: 1430140458253493288}
+  - component: {fileID: 836557298560073261}
   m_Layer: 9
   m_Name: BigMotor
   m_TagString: Untagged
@@ -1359,7 +1360,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7847437039278827098}
@@ -1461,9 +1462,9 @@ MonoBehaviour:
   - {fileID: 951587356981498105}
   - {fileID: 5472674478890574812}
   - {fileID: 5869283196711977113}
-  baseOffset: {x: 0, y: 1.1, z: 0}
-  extraFloat: 150
-  floatAmp: 25
+  baseOffset: {x: 0, y: 1, z: 0}
+  extraFloat: 1
+  floatAmp: 0.25
   floatSpeed: 2
   spinSpeed: 20
   hoverScale: 1.3
@@ -1471,8 +1472,9 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 512
-  stepUp: 20
+  stepUp: 0.1
   brickCol: {fileID: 2911554301307151122}
+  clearance: 0.4
 --- !u!54 &1430140458253493288
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1499,7 +1501,19 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
+--- !u!114 &836557298560073261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682321469526900776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af4a47981a857a54a9ec6dce62523aa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1893671031257578001
 GameObject:
   m_ObjectHideFlags: 0
@@ -3400,6 +3414,7 @@ GameObject:
   - component: {fileID: 8982687686223852511}
   - component: {fileID: 8203868568532341193}
   - component: {fileID: 64742921353156085}
+  - component: {fileID: 671819999081795443}
   m_Layer: 9
   m_Name: MotorHub
   m_TagString: Untagged
@@ -3506,7 +3521,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 0
   m_IsKinematic: 1
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
 --- !u!59 &64742921353156085
@@ -3548,6 +3563,18 @@ HingeJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &671819999081795443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5364590926424881897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af4a47981a857a54a9ec6dce62523aa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5470233929576286463
 GameObject:
   m_ObjectHideFlags: 0
