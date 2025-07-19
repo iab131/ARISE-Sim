@@ -259,7 +259,6 @@ GameObject:
   - component: {fileID: 1170274612907434665}
   - component: {fileID: 7916218249958211201}
   - component: {fileID: 338245882859810807}
-  - component: {fileID: -8781875639409618461}
   m_Layer: 9
   m_Name: Technic Angular Beam Hook
   m_TagString: Untagged
@@ -276,7 +275,7 @@ Transform:
   m_GameObject: {fileID: 948696454444991035}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 502.8494, y: 0.40131363, z: 885.7}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -377,33 +376,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 7764321405628520098, guid: c8ea4f496d843254c8609c99de82997d, type: 3}
---- !u!54 &-8781875639409618461
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 948696454444991035}
-  serializedVersion: 4
-  m_Mass: 5
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 1
 --- !u!1 &1034573001398674663
 GameObject:
   m_ObjectHideFlags: 0

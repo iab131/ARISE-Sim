@@ -444,7 +444,6 @@ GameObject:
   - component: {fileID: 134512917543838140}
   - component: {fileID: 299552102385467909}
   - component: {fileID: 2327581089553110047}
-  - component: {fileID: -2212754155001400917}
   m_Layer: 9
   m_Name: Ball Cup
   m_TagString: Untagged
@@ -461,7 +460,7 @@ Transform:
   m_GameObject: {fileID: 2817173572668355164}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
-  m_LocalPosition: {x: 2327.5312, y: 118.877205, z: 1143.0315}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -559,33 +558,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 6884025990139711751, guid: 9b7ca54ef77c73a4e80e7411e1c36594, type: 3}
---- !u!54 &-2212754155001400917
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2817173572668355164}
-  serializedVersion: 4
-  m_Mass: 5
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 1
 --- !u!1 &3655942151017229222
 GameObject:
   m_ObjectHideFlags: 0
@@ -1677,9 +1649,9 @@ GameObject:
   - component: {fileID: 4375972603295867457}
   - component: {fileID: 6089416280135750057}
   - component: {fileID: 1312043551381430277}
-  - component: {fileID: 5383335218928266728}
+  - component: {fileID: 8424402943905553339}
   m_Layer: 0
-  m_Name: Inner-Node-parts_dot_io-50.001
+  m_Name: Ball
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1753,8 +1725,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &5383335218928266728
-MeshCollider:
+--- !u!135 &8424402943905553339
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1771,10 +1743,9 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -7479974814374819329, guid: 9b7ca54ef77c73a4e80e7411e1c36594, type: 3}
+  serializedVersion: 3
+  m_Radius: 0.8949995
+  m_Center: {x: 0, y: 0, z: -5.684342e-14}
 --- !u!1 &9144290035273357657
 GameObject:
   m_ObjectHideFlags: 0

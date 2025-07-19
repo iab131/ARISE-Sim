@@ -122,7 +122,6 @@ GameObject:
   - component: {fileID: 2683714886887676556}
   - component: {fileID: 427443860307580946}
   - component: {fileID: 3890186334272599683}
-  - component: {fileID: -5497297536892759217}
   m_Layer: 9
   m_Name: Peg 3m
   m_TagString: Untagged
@@ -139,7 +138,7 @@ Transform:
   m_GameObject: {fileID: 4450554746173797535}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 424.52704, y: 318.92154, z: 1491.1345}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -223,33 +222,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -640881436400125368, guid: 3223cadd50d504d4abd5620fcd38ccbd, type: 3}
---- !u!54 &-5497297536892759217
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4450554746173797535}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 1
 --- !u!1 &5306751312394758129
 GameObject:
   m_ObjectHideFlags: 0

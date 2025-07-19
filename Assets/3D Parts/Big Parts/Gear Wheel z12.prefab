@@ -183,7 +183,6 @@ GameObject:
   - component: {fileID: 8039100776362362880}
   - component: {fileID: 2973995328652590130}
   - component: {fileID: 8324161454985117573}
-  - component: {fileID: -6610531004624222606}
   m_Layer: 9
   m_Name: Gear Wheel z12
   m_TagString: Untagged
@@ -200,7 +199,7 @@ Transform:
   m_GameObject: {fileID: 5997944475701541066}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1688.3374, y: 34.836815, z: 1269.3248}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -283,33 +282,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -3402174542461500256, guid: 9b7ca54ef77c73a4e80e7411e1c36594, type: 3}
---- !u!54 &-6610531004624222606
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5997944475701541066}
-  serializedVersion: 4
-  m_Mass: 5
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 1
 --- !u!1 &8549946898135241261
 GameObject:
   m_ObjectHideFlags: 0

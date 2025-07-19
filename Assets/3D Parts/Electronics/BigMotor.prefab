@@ -1341,8 +1341,6 @@ GameObject:
   - component: {fileID: 7546724147494881003}
   - component: {fileID: 7780758158003764082}
   - component: {fileID: 4075673756560049235}
-  - component: {fileID: 1430140458253493288}
-  - component: {fileID: 836557298560073261}
   m_Layer: 9
   m_Name: BigMotor
   m_TagString: Untagged
@@ -1475,45 +1473,6 @@ MonoBehaviour:
   stepUp: 0.1
   brickCol: {fileID: 2911554301307151122}
   clearance: 0.4
---- !u!54 &1430140458253493288
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1682321469526900776}
-  serializedVersion: 4
-  m_Mass: 5
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 1
---- !u!114 &836557298560073261
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1682321469526900776}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af4a47981a857a54a9ec6dce62523aa0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1893671031257578001
 GameObject:
   m_ObjectHideFlags: 0
@@ -3532,7 +3491,7 @@ HingeJoint:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5364590926424881897}
   serializedVersion: 3
-  m_ConnectedBody: {fileID: 1430140458253493288}
+  m_ConnectedBody: {fileID: 0}
   m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}

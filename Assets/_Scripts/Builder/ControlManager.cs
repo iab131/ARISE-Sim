@@ -201,10 +201,12 @@ public class ControlManager : MonoBehaviour
             {
                 if (GetGroupRoot(hit.transform).childCount > 1)
                 {
+                    if (!hit.name.Contains("ControlHub"))
                     Destroy(hit);
                 }
                 else
                 {
+                    if (!HasControlHub(hit.transform))
                     Destroy(GetGroupRoot(hit.transform).gameObject);
                 }
             }
@@ -553,14 +555,17 @@ public class ControlManager : MonoBehaviour
                        : (secondHoleGO.CompareTag("PegHole") || secondHoleGO.CompareTag("AxleHole") || secondHoleGO.name.Contains("Axle"))
                          ? secondHoleGO.transform
                          : null;
+
                 pivot = pegHole.position;
                 axis = hole.right;
+                pegHole.RotateAround(pivot,axis,angle);
                 break;
             case "up":
                 axis = hole.up;
+                hole.RotateAround(pivot, axis, angle);
+
                 break;
         }
-        hole.RotateAround(pivot, axis, angle);
 
         SnapPartToHole(GetGroupRoot(movingPartRoot),
                                firstHoleGO.transform,
@@ -776,6 +781,11 @@ public class ControlManager : MonoBehaviour
     {
         Transform rotatingHub = GetRotatingHub(mover);
         Transform group = GetGroupRoot(root);
+        if (rotatingHub == null)
+        {
+            rotatingHub = GetRotatingHub(root);
+            group = GetGroupRoot(mover);
+        }
 
         if (rotatingHub == null) //not motor
         { 
