@@ -1,6 +1,7 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using System.Collections.Generic;
 using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Floating brick label that:
@@ -42,6 +43,8 @@ public class MotorLabel : MonoBehaviour
     public int MotorIndex { get; private set; }
     public char MotorLetter { get; private set; }
 
+    private static List<MotorLabel> allLabels = new();
+
     // ───────── Unity Life-cycle ─────────
     private void Awake()
     {
@@ -52,7 +55,13 @@ public class MotorLabel : MonoBehaviour
         labelBrick.SetActive(false);
 
         MotorIndex = _nextIndex++;
+        allLabels.Add(this);
     }
+    private void OnDestroy()
+    {
+        allLabels.Remove(this);
+    }
+    public static IEnumerable<MotorLabel> All => allLabels;
 
     private void Update()
     {
@@ -121,6 +130,7 @@ public class MotorLabel : MonoBehaviour
     public void SetLetter(char c)
     {
         foreach (var t in labelTexts) if (t) t.text = c.ToString();
+        GetComponentInChildren<SimMotor>().SetMotorLabel(c);
         MotorLetter = c;
     }
 

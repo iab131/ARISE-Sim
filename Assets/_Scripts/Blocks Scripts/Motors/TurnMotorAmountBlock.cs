@@ -23,7 +23,7 @@ public class TurnMotorAmountBlock : BlockBase
         }
 
         // 2. Parse value
-        if (!double.TryParse(valueInputField.text, out double value))
+        if (!float.TryParse(valueInputField.text, out float value))
         {
             Debug.LogWarning($"[{gameObject.name}] Invalid value input.");
             onComplete?.Invoke();
@@ -38,7 +38,7 @@ public class TurnMotorAmountBlock : BlockBase
         string unit = unitDropdown.options[unitDropdown.value].text.ToLower();
 
         // 4. Calculate signed value
-        double signedValue = value * directionMultiplier;
+        float signedValue = value * directionMultiplier;
 
         // 5. Log
         Debug.Log($"[{gameObject.name}] Turn motor {motorPort} {rotationDirection} for {value} {unit}");
@@ -47,7 +47,7 @@ public class TurnMotorAmountBlock : BlockBase
         switch (unit)
         {
             case "rotations":
-                RotateMotor(motorPort, signedValue);
+                RotateMotor(motorPort, signedValue);  
                 onComplete?.Invoke();
                 break;
 
@@ -67,28 +67,29 @@ public class TurnMotorAmountBlock : BlockBase
         }
     }
 
-    private void RotateMotor(string port, double rotations)
+    private void RotateMotor(string port, float rotations)
     {
-        // TODO: Hook into motor manager
-        //Debug.Log($"[Motor] Rotate {port} for {rotations} rotations");
+        if (port.Length != 1 || !char.IsLetter(port[0])) return;
+        var motor = MotorSimulationManager.Instance.GetMotor(port[0]);
+        motor?.RotateRotations(rotations);
     }
 
-    private void RotateMotorByDegrees(string port, double degrees)
+    private void RotateMotorByDegrees(string port, float degrees)
     {
-        // TODO: Hook into motor manager
-        //Debug.Log($"[Motor] Rotate {port} for {degrees} degrees");
+        if (port.Length != 1 || !char.IsLetter(port[0])) return;
+        var motor = MotorSimulationManager.Instance.GetMotor(port[0]);
+        motor?.RotateByDegrees(degrees);
+        Debug.Log(degrees);
     }
 
     private void RunMotorForSeconds(string port, double seconds, Action onComplete)
     {
-        //Debug.Log($"[Motor] Run {port} for {seconds} seconds");
-        StartCoroutine(WaitAndFinish((float)Mathf.Abs((float)seconds), onComplete));
-    }
-
-    private IEnumerator WaitAndFinish(float duration, Action onComplete)
-    {
-        yield return new WaitForSeconds(duration);
-        //Debug.Log("[Motor] Done waiting.");
+        if (port.Length != 1 || !char.IsLetter(port[0])) { onComplete?.Invoke(); return; }
+        var motor = MotorSimulationManager.Instance.GetMotor(port[0]);
+        if (motor != null)
+            motor.RunForSeconds((float)seconds);
         onComplete?.Invoke();
     }
+
+
 }

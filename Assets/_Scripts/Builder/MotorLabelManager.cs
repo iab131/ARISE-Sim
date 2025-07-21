@@ -88,13 +88,19 @@ public class MotorLabelManager : MonoBehaviour
         if (enable == assignModeActive) return;   // nothing to do
         assignModeActive = enable;
 
-        if (!assignModeActive) CloseModal();      // hides modal & hover
+        if (!assignModeActive)
+        {
+            CloseModal();
+        }// hides modal & hover
 
-        foreach (MotorLabel lbl in Object.FindObjectsByType<MotorLabel>(FindObjectsSortMode.None))
+        foreach (MotorLabel lbl in MotorLabel.All)
         {
             lbl.SetLabelVisible(assignModeActive);
             if (assignModeActive) lbl.AdjustLabelToAvoidCollision();
-            else lbl.SetHovered(false);
+            else
+            {
+                lbl.SetHovered(false);
+            }
         }
     }
 

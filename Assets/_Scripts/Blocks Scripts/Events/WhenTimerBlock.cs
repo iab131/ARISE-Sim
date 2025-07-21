@@ -20,7 +20,7 @@ public class WhenTimerBlock : BlockBase, IConditionalStart
             return false;
         }
 
-        double currentTimeSincePlay = Time.timeSinceLevelLoad - BlockGroup.playStartTime;
+        double currentTimeSincePlay = Time.timeSinceLevelLoad - BlockCodeExecutor.playStartTime;
 
         //Debug.Log($"[{gameObject.name}] Checking if {currentTimeSincePlay:F2} > {threshold:F2}");
 

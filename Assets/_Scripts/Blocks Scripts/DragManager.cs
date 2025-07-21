@@ -60,15 +60,15 @@ public class DragManager : MonoBehaviour
         foreach (var result in raycastResults)
         {
             // Ignore clicks on input fields, dropdowns, etc.
-            if (
-                result.gameObject.GetComponent<InputField>() != null ||
-                result.gameObject.GetComponent<TMP_InputField>() != null ||
-                result.gameObject.GetComponent<TMP_Dropdown>() != null ||
-                result.gameObject.GetComponent<Button>() != null
-            )
-            {
-                return;
-            }
+            //if (
+            //    result.gameObject.GetComponent<InputField>() != null ||
+            //    result.gameObject.GetComponent<TMP_InputField>() != null ||
+            //    result.gameObject.GetComponent<TMP_Dropdown>() != null ||
+            //    result.gameObject.GetComponent<Button>() != null
+            //)
+            //{
+            //    return;
+            //}
 
             if (result.gameObject.tag.Contains("Block"))
             {
@@ -88,7 +88,9 @@ public class DragManager : MonoBehaviour
         {
             currentDrag = Instantiate(block, dragParent);
             FixBlockAnchors(currentDrag);
-            
+
+            SetInputsInteractable(currentDrag, true);
+
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 block.GetComponent<RectTransform>(),
                 Input.mousePosition,
@@ -109,6 +111,17 @@ public class DragManager : MonoBehaviour
             );
         }
         
+    }
+    private void SetInputsInteractable(GameObject block, bool interactable)
+    {
+        foreach (var input in block.GetComponentsInChildren<TMP_InputField>(true))
+            input.interactable = interactable;
+
+        foreach (var dropdown in block.GetComponentsInChildren<TMP_Dropdown>(true))
+            dropdown.interactable = interactable;
+
+        foreach (var button in block.GetComponentsInChildren<Button>(true))
+            button.interactable = interactable;
     }
 
     public void EndDrag()

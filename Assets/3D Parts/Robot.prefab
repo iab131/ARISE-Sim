@@ -22995,7 +22995,7 @@ HingeJoint:
   m_UseMotor: 1
   m_Motor:
     targetVelocity: 0
-    force: 0
+    force: 100
     freeSpin: 0
   m_UseLimits: 0
   m_ExtendedLimits: 0
@@ -29236,7 +29236,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 14
+  m_Constraints: 0
   m_CollisionDetection: 1
 --- !u!59 &3239906333860377780
 HingeJoint:
@@ -29260,7 +29260,7 @@ HingeJoint:
   m_UseMotor: 1
   m_Motor:
     targetVelocity: 0
-    force: 0
+    force: 100
     freeSpin: 0
   m_UseLimits: 0
   m_ExtendedLimits: 0
@@ -42159,7 +42159,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 14
+  m_Constraints: 0
   m_CollisionDetection: 1
 --- !u!59 &8993818607884367221
 HingeJoint:
@@ -42183,7 +42183,7 @@ HingeJoint:
   m_UseMotor: 1
   m_Motor:
     targetVelocity: 0
-    force: 0
+    force: 100
     freeSpin: 0
   m_UseLimits: 0
   m_ExtendedLimits: 0

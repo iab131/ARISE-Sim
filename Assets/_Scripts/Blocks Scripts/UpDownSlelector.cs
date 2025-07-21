@@ -24,7 +24,9 @@ public class UpDownSelector : MonoBehaviour
     private Transform newParent;
 
     public enum Direction { Forward = 1, Backward = -1 }
-    public Direction CurrentDirection { get; private set; } = Direction.Forward;
+
+    //public Direction direction = Direction.Forward;
+    public Direction CurrentDirection = Direction.Forward;
 
     private void Start()
     {
@@ -33,8 +35,16 @@ public class UpDownSelector : MonoBehaviour
         selectedButton = upButton;
         SelectButton(upButton);
 
+        //if (direction == Direction.Forward)
+        //{
+        //    CurrentDirection = Direction.Forward;
+        //}
+        //else
+        //{
+        //    CurrentDirection = Direction.Backward;
+        //}
         GameObject found = GameObject.Find("BlockCodingUI");
-        newParent = found.transform;
+        newParent = found?.transform;
     }
 
     private void Update()
@@ -67,6 +77,7 @@ public class UpDownSelector : MonoBehaviour
         SelectButton(upButton);
         directionImage.sprite = upSprite;
         CurrentDirection = Direction.Forward;
+        //direction = Direction.Forward;
     }
 
     public void SelectDown()
@@ -74,6 +85,7 @@ public class UpDownSelector : MonoBehaviour
         SelectButton(downButton);
         directionImage.sprite = downSprite;
         CurrentDirection = Direction.Backward;
+        //direction = Direction.Backward;
     }
 
     private void SelectButton(Button button)

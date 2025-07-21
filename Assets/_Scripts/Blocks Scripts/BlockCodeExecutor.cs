@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlockGroup : MonoBehaviour
+public class BlockCodeExecutor : MonoBehaviour
 {
     public Transform codingArea;
     public static float playStartTime;
@@ -113,7 +113,7 @@ public class BlockGroup : MonoBehaviour
     public static void StopExecution()
     {
         stopExecution = true;
-        Debug.Log("🛑 BlockGroup: Execution stopped by StopAllBlock.");
+        //Debug.Log("🛑 BlockGroup: Execution stopped by StopAllBlock.");
     }
 
 }
