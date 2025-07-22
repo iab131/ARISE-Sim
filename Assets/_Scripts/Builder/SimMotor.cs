@@ -18,9 +18,15 @@ public class SimMotor : MonoBehaviour
 
     // ───────── Inspector / Label ─────────
     public char motorLabel = '\0';  // e.g. 'A', 'B', etc.
+    
+    public float speed = 1000f;
+    private const float MAX_SPEED = 1000f;
+    private const float FORCE = 150f;
     private Rigidbody rb;
     private HingeJoint motor;
 
+    private float kP = 20f;
+    private float kD = 0.5f;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -31,6 +37,13 @@ public class SimMotor : MonoBehaviour
             MotorSimulationManager.Instance.RegisterMotor(motorLabel, this);
         }
         allMotors.Add(this);
+
+        JointMotor m = motor.motor;
+        m.force = FORCE;
+        m.targetVelocity = 0f;
+        m.freeSpin = false;
+        motor.motor = m;
+        motor.useMotor = true;
     }
 
     private void OnDestroy()
@@ -49,43 +62,83 @@ public class SimMotor : MonoBehaviour
         //rb.interpolation = isBuilding ? RigidbodyInterpolation.None : RigidbodyInterpolation.Interpolate;
     }
 
-    public void RotateRotations(float rotations)
+    public Coroutine RotateRotations(float rotations)
     {
-        RotateByDegrees(rotations * 360f);
+        return RotateByDegrees(rotations * 360f);
     }
 
-    public void RotateByDegrees(float degrees)
+    public Coroutine RotateByDegrees(float degrees)
     {
-        StartCoroutine(RotateToAngle(degrees));
+        return StartCoroutine(RotateToAnglePID(degrees));
     }
-
-    private IEnumerator RotateToAngle(float targetDegrees)
+    private IEnumerator RotateToAnglePID(float targetDegrees)
     {
-        float rotatedSoFar = 0f;
+        float targetAngle = GetCurrentAngle() + targetDegrees;
+        float rotatedSoFar = -0.1f;
+        float startAngle = GetCurrentAngle();
         float lastAngle = GetCurrentAngle();
+       
 
-        JointMotor m = motor.motor;
-        m.force = 100f;
-        m.targetVelocity = Mathf.Sign(targetDegrees) * 100f;
-        m.freeSpin = false;
-        motor.motor = m;
-        motor.useMotor = true;
+        float lastError = 0f;
 
-        while (Mathf.Abs(rotatedSoFar) + Mathf.Abs(AngleDelta(GetCurrentAngle(), lastAngle)) < Mathf.Abs(targetDegrees))
-
+        while (true)
         {
             float currentAngle = GetCurrentAngle();
-            float delta = AngleDelta(currentAngle, lastAngle);  // how much it changed this frame
 
+            // ✅ Always use DeltaAngle to handle wraparound correctly
+            float delta = Mathf.DeltaAngle(lastAngle, currentAngle);
             rotatedSoFar += delta;
             lastAngle = currentAngle;
 
-            yield return null;
+            float error = targetDegrees - rotatedSoFar;
+            float derivative = (error - lastError) / Time.fixedDeltaTime;
+
+            float output = kP * error + kD * derivative;
+
+            JointMotor m = motor.motor;
+            m.targetVelocity = Mathf.Clamp(output, -speed, speed);
+            motor.motor = m;
+            motor.useMotor = true;
+
+            lastError = error;
+
+            // Stop condition: we're close and slowing down
+            if (Mathf.Abs(error) < 0.1f && Mathf.Abs(derivative) < 5f)
+                break;
+
+            yield return new WaitForFixedUpdate();
         }
 
         StopMotor();
-        Debug.Log($"✅ Rotated total: {rotatedSoFar:F2} degrees.");
+        transform.localRotation = Quaternion.Euler(0, 0, startAngle + targetDegrees);
+        Debug.Log("✅ PID Rotation complete.");
     }
+
+    //private IEnumerator RotateToAngle(float targetDegrees)
+    //{
+    //    float rotatedSoFar = 0f;
+    //    float lastAngle = GetCurrentAngle();
+    //    JointMotor m = motor.motor;
+    //    m.targetVelocity = Mathf.Sign(targetDegrees) * speed;
+    //    m.freeSpin = false;
+    //    motor.motor = m;
+    //    motor.useMotor = true;
+
+    //    while (Mathf.Abs(rotatedSoFar) + Mathf.Abs(AngleDelta(GetCurrentAngle(), lastAngle)) < Mathf.Abs(targetDegrees))
+
+    //    {
+    //        float currentAngle = GetCurrentAngle();
+    //        float delta = AngleDelta(currentAngle, lastAngle);  // how much it changed this frame
+
+    //        rotatedSoFar += delta;
+    //        lastAngle = currentAngle;
+
+    //        yield return null;
+    //    }
+
+    //    StopMotor();
+    //    Debug.Log($"✅ Rotated total: {rotatedSoFar:F2} degrees.");
+    //}
 
 
     // Get Y angle in local space
@@ -101,9 +154,9 @@ public class SimMotor : MonoBehaviour
     }
 
 
-    public void RunForSeconds(float seconds)
+    public Coroutine RunForSeconds(float seconds)
     {
-        StartCoroutine(RunMotorForDuration(seconds));
+        return StartCoroutine(RunMotorForDuration(seconds));
     }
     
     public void StopMotor()
@@ -115,11 +168,20 @@ public class SimMotor : MonoBehaviour
     private IEnumerator RunMotorForDuration(float seconds)
     {
         JointMotor a = motor.motor;
-        a.targetVelocity = 100f;
+        a.targetVelocity = speed;
         motor.motor = a;
         yield return new WaitForSeconds(seconds);
-        JointMotor stopMotor = motor.motor;
-        stopMotor.targetVelocity = 0f;
-        motor.motor = stopMotor;
+        StopMotor();
+    }
+
+    public void SetSpeed(float percent)
+    {
+        speed = MAX_SPEED * percent / 100;
+    }
+
+    public void SetPID(float newP, float newD)
+    {
+        kP = newP;
+        kD = newD;
     }
 }

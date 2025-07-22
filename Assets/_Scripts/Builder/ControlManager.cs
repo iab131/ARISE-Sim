@@ -261,7 +261,7 @@ public class ControlManager : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, mask))
             {
                 // 1. root we will actually move
-                draggedPart = hit.collider.transform.parent?.gameObject;
+                draggedPart = GetGroupRoot(hit.transform).gameObject;
                 if (draggedPart == null) return;
 
                 // 2. world-space point we clicked on

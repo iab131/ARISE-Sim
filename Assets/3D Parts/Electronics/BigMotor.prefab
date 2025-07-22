@@ -3505,7 +3505,7 @@ HingeJoint:
   m_UseMotor: 1
   m_Motor:
     targetVelocity: 0
-    force: 100
+    force: 150
     freeSpin: 0
   m_UseLimits: 0
   m_ExtendedLimits: 0
@@ -3534,6 +3534,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af4a47981a857a54a9ec6dce62523aa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  motorLabel: 0
+  speed: 1000
 --- !u!1 &5470233929576286463
 GameObject:
   m_ObjectHideFlags: 0

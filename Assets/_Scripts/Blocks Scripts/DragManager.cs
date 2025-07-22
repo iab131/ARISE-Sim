@@ -60,15 +60,15 @@ public class DragManager : MonoBehaviour
         foreach (var result in raycastResults)
         {
             // Ignore clicks on input fields, dropdowns, etc.
-            //if (
-            //    result.gameObject.GetComponent<InputField>() != null ||
-            //    result.gameObject.GetComponent<TMP_InputField>() != null ||
-            //    result.gameObject.GetComponent<TMP_Dropdown>() != null ||
-            //    result.gameObject.GetComponent<Button>() != null
-            //)
-            //{
-            //    return;
-            //}
+            if (RectTransformUtility.RectangleContainsScreenPoint(dropArea.GetComponent<RectTransform>(), Input.mousePosition) &&
+                result.gameObject.GetComponent<InputField>() != null ||
+                result.gameObject.GetComponent<TMP_InputField>() != null ||
+                result.gameObject.GetComponent<TMP_Dropdown>() != null ||
+                result.gameObject.GetComponent<Button>() != null
+            )
+            {
+                return;
+            }
 
             if (result.gameObject.tag.Contains("Block"))
             {

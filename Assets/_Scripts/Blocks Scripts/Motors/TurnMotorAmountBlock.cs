@@ -1,7 +1,8 @@
-using UnityEngine;
-using TMPro;
 using System;  // For Action
 using System.Collections;
+using TMPro;
+using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 
 public class TurnMotorAmountBlock : BlockBase
 {
@@ -43,28 +44,54 @@ public class TurnMotorAmountBlock : BlockBase
         // 5. Log
         Debug.Log($"[{gameObject.name}] Turn motor {motorPort} {rotationDirection} for {value} {unit}");
 
+        
+        StartCoroutine(ExecuteMotorRotation(motorPort, signedValue, unit, onComplete));
+
         // 6. Handle unit logic
+        //switch (unit)
+        //{
+        //    case "rotations":
+        //        RotateMotor(motorPort, signedValue);  
+        //        onComplete?.Invoke();
+        //        break;
+
+        //    case "degrees":
+        //        RotateMotorByDegrees(motorPort, signedValue);
+        //        onComplete?.Invoke();
+        //        break;
+
+        //    case "seconds":
+        //        RunMotorForSeconds(motorPort, signedValue, onComplete);
+        //        break;
+
+        //    default:
+        //        Debug.LogWarning("Unknown unit type.");
+        //        onComplete?.Invoke();
+        //        break;
+        //}
+    }
+    private IEnumerator ExecuteMotorRotation(string port, float signedValue, string unit, Action onComplete)
+    {
+        if (port.Length != 1 || !char.IsLetter(port[0])) { onComplete?.Invoke(); yield break; }
+        var motor = MotorSimulationManager.Instance.GetMotor(port[0]);
+        if (motor == null) { onComplete?.Invoke(); yield break; }
+
         switch (unit)
         {
             case "rotations":
-                RotateMotor(motorPort, signedValue);  
-                onComplete?.Invoke();
+                yield return motor.RotateByDegrees(signedValue * 360f);
                 break;
 
             case "degrees":
-                RotateMotorByDegrees(motorPort, signedValue);
-                onComplete?.Invoke();
+                yield return motor.RotateByDegrees(signedValue);
                 break;
 
             case "seconds":
-                RunMotorForSeconds(motorPort, signedValue, onComplete);
-                break;
-
-            default:
-                Debug.LogWarning("Unknown unit type.");
-                onComplete?.Invoke();
+                yield return motor.RunForSeconds(signedValue);
                 break;
         }
+
+        onComplete?.Invoke();
     }
 
     private void RotateMotor(string port, float rotations)
