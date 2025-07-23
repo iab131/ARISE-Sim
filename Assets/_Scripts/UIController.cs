@@ -16,7 +16,7 @@ public class UIController : MonoBehaviour
         // 1. Switch to Sim view (this disables the block coding panel)
         navBar.ShowSimulation();
         // 2. Wait a frame so Unity completes enabling/disabling
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
 
         // 3. Run the code (BlockCodeExecutor should now reference the sim robot)
         blockCodeExecutor.OnPlay();

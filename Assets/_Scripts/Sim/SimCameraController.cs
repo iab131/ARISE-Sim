@@ -14,10 +14,10 @@ public class SimCameraController : MonoBehaviour
     public float maxYAngle = 80f;
 
     [Header("Zoom")]
-    public float distance = 2000f;
-    public float zoomSpeed = 1000f;
-    public float minDistance = 700f;
-    public float maxDistance = 7000f;
+    public float distance = 21f;
+    public float zoomSpeed = 25f;
+    public float minDistance = 7f;
+    public float maxDistance = 70f;
 
     [Header("Smoothing")]
     public float positionSmoothSpeed = 10f;
@@ -30,8 +30,8 @@ public class SimCameraController : MonoBehaviour
     public CameraMode currentMode = CameraMode.Orbit;
 
     [Header("God View")]
-    public Vector3 godViewOffset = new Vector3(0f, 3000f, -3000f);
-    public Vector3 godViewEulerAngles = new Vector3(60f, 0f, 0f);
+    public Vector3 godViewOffset = new Vector3(0f, 30f, -30f);
+    public Vector3 godViewEulerAngles = new Vector3(45f, 0f, 0f);
 
     private float currentYaw = 0f;
     private float currentPitch = 45f;
@@ -88,7 +88,7 @@ public class SimCameraController : MonoBehaviour
         }
         else if (currentMode == CameraMode.GodView)
         {
-            transform.position = target.position + godViewOffset;
+            transform.position = godViewOffset;
             transform.rotation = Quaternion.Euler(godViewEulerAngles);
         }
 

@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-using TMPro;
+﻿using TMPro;
+using UnityEngine;
+using System;
 
 public class SetMoveMotorsBlock : BlockBase
 {
@@ -7,10 +8,10 @@ public class SetMoveMotorsBlock : BlockBase
     public TMP_InputField leftMotorInput;
     public TMP_InputField rightMotorInput;
 
-    public override void Execute(System.Action onComplete)
+    public override void Execute(Action onComplete)
     {
-        string leftPort = leftMotorInput.text;
-        string rightPort = rightMotorInput.text;
+        string leftPort = leftMotorInput.text.Trim().ToUpper();
+        string rightPort = rightMotorInput.text.Trim().ToUpper();
 
         if (string.IsNullOrWhiteSpace(leftPort) || string.IsNullOrWhiteSpace(rightPort))
         {
@@ -26,8 +27,8 @@ public class SetMoveMotorsBlock : BlockBase
 
     private void SetMotors(string left, string right)
     {
-        // TODO: Connect to your motor controller logic
-        // Example: MotorManager.AssignDriveMotors(left, right);
-        //Debug.Log($"Motors set → Left: {left}, Right: {right}");
+        if (left.Length != 1 || !char.IsLetter(left[0])) { return; }
+        if (right.Length != 1 || !char.IsLetter(right[0])) { return; }
+        DrivetrainController.Instance.AssignMotorsByLabel(left[0], right[0]);
     }
 }

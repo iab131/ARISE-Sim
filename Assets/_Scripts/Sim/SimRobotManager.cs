@@ -4,7 +4,7 @@ public static class SimRobotManager
 {
 
     public static Vector3 robotRegPos;
-
+    //public static GameObject SimRobot;
     public static void SpawnSimulationRobot(
         NavBarController.View targetView,
         GameObject buildingRoot,
@@ -44,10 +44,12 @@ public static class SimRobotManager
         }
 
         GameObject groupCopy = Object.Instantiate(groupToCopy.gameObject, parent);
+        //SimRobot = groupCopy;
         groupCopy.name = "Robot";
         groupCopy.transform.localPosition = groupToCopy.localPosition;
         groupCopy.transform.localRotation = groupToCopy.localRotation;
         groupCopy.transform.localScale = groupToCopy.localScale;
+        CenterGroupOnChildren(groupCopy);
 
         // Adjust height if intersecting ground
         float groundY = 0f;
@@ -58,7 +60,7 @@ public static class SimRobotManager
         float offset = groundY - bounds.min.y;
         if (offset > 0f)
         {
-            groupCopy.transform.position += new Vector3(0, offset + 0.01f, 0);
+            groupCopy.transform.position += new Vector3(0, offset, 0);
             robotRegPos = groupCopy.transform.position;
         }
 
@@ -79,6 +81,24 @@ public static class SimRobotManager
                 simCam.target = groupCopy.transform;
             }
         }
+    }
+    public static void CenterGroupOnChildren(GameObject group)
+    {
+        if (group.transform.childCount == 0) return;
+
+        Vector3 avg = Vector3.zero;
+        foreach (Transform child in group.transform)
+            avg += child.position;
+
+        avg /= group.transform.childCount;
+
+        // Move group to center
+        Vector3 offset = group.transform.position - avg;
+        group.transform.position = avg;
+
+        // Keep children in the same world positions
+        foreach (Transform child in group.transform)
+            child.position += offset;
     }
 
     public static Transform FindRobot(Transform root)

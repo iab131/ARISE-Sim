@@ -1,15 +1,15 @@
 using UnityEngine;
 using TMPro;
-
-public class StartTurnBlockop : BlockBase
+using System;
+public class StartTurnBlock : BlockBase
 {
     [Header("Inputs")]
     public TMP_InputField directionInputField;  // Format: "Right: 40", "Left: -30"
 
-    public override void Execute(System.Action onComplete)
+    public override void Execute(Action onComplete)
     {
-        double signedValue = ParseDirectionalInput(directionInputField.text);
-        if (double.IsNaN(signedValue))
+        float signedValue = ParseDirectionalInput(directionInputField.text);
+        if (float.IsNaN(signedValue))
         {
             Debug.LogWarning($"Invalid direction input on {gameObject.name}");
             return;
@@ -19,26 +19,21 @@ public class StartTurnBlockop : BlockBase
 
         Debug.Log($"[{gameObject.name}] Start moving {directionText} forever with input value {signedValue}");
 
-        RunMotorForever(signedValue);
+        DrivetrainController.Instance.StartTurning(signedValue);
+
         onComplete?.Invoke();
     }
 
-    private double ParseDirectionalInput(string input)
+    private float ParseDirectionalInput(string input)
     {
-        if (string.IsNullOrWhiteSpace(input)) return double.NaN;
+        if (string.IsNullOrWhiteSpace(input)) return float.NaN;
 
         string[] parts = input.Split(':');
-        if (parts.Length != 2) return double.NaN;
+        if (parts.Length != 2) return float.NaN;
 
         string valueStr = parts[1].Trim();
-        if (!double.TryParse(valueStr, out double value)) return double.NaN;
+        if (!float.TryParse(valueStr, out float value)) return float.NaN;
 
         return value;
-    }
-
-    private void RunMotorForever(double signedValue)
-    {
-        // TODO: replace with real motor logic
-        //Debug.Log($"Running motor indefinitely with input {signedValue}");
     }
 }

@@ -1,7 +1,6 @@
 using System;  // For Action
 using System.Collections;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class TurnMotorAmountBlock : BlockBase
@@ -46,29 +45,6 @@ public class TurnMotorAmountBlock : BlockBase
 
         
         StartCoroutine(ExecuteMotorRotation(motorPort, signedValue, unit, onComplete));
-
-        // 6. Handle unit logic
-        //switch (unit)
-        //{
-        //    case "rotations":
-        //        RotateMotor(motorPort, signedValue);  
-        //        onComplete?.Invoke();
-        //        break;
-
-        //    case "degrees":
-        //        RotateMotorByDegrees(motorPort, signedValue);
-        //        onComplete?.Invoke();
-        //        break;
-
-        //    case "seconds":
-        //        RunMotorForSeconds(motorPort, signedValue, onComplete);
-        //        break;
-
-        //    default:
-        //        Debug.LogWarning("Unknown unit type.");
-        //        onComplete?.Invoke();
-        //        break;
-        //}
     }
     private IEnumerator ExecuteMotorRotation(string port, float signedValue, string unit, Action onComplete)
     {
@@ -79,44 +55,19 @@ public class TurnMotorAmountBlock : BlockBase
         switch (unit)
         {
             case "rotations":
-                yield return motor.RotateByDegrees(signedValue * 360f);
+                yield return StartCoroutine(motor.RotateByDegrees(signedValue * 360f));
                 break;
 
             case "degrees":
-                yield return motor.RotateByDegrees(signedValue);
+                yield return StartCoroutine(motor.RotateByDegrees(signedValue));
                 break;
 
             case "seconds":
-                yield return motor.RunForSeconds(signedValue);
+                yield return StartCoroutine(motor.RunForSeconds(Math.Abs(signedValue), signedValue>0));
                 break;
         }
 
         onComplete?.Invoke();
     }
-
-    private void RotateMotor(string port, float rotations)
-    {
-        if (port.Length != 1 || !char.IsLetter(port[0])) return;
-        var motor = MotorSimulationManager.Instance.GetMotor(port[0]);
-        motor?.RotateRotations(rotations);
-    }
-
-    private void RotateMotorByDegrees(string port, float degrees)
-    {
-        if (port.Length != 1 || !char.IsLetter(port[0])) return;
-        var motor = MotorSimulationManager.Instance.GetMotor(port[0]);
-        motor?.RotateByDegrees(degrees);
-        Debug.Log(degrees);
-    }
-
-    private void RunMotorForSeconds(string port, double seconds, Action onComplete)
-    {
-        if (port.Length != 1 || !char.IsLetter(port[0])) { onComplete?.Invoke(); return; }
-        var motor = MotorSimulationManager.Instance.GetMotor(port[0]);
-        if (motor != null)
-            motor.RunForSeconds((float)seconds);
-        onComplete?.Invoke();
-    }
-
 
 }

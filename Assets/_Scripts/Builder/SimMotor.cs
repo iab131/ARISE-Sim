@@ -21,7 +21,7 @@ public class SimMotor : MonoBehaviour
     
     public float speed = 1000f;
     private const float MAX_SPEED = 1000f;
-    private const float FORCE = 150f;
+    private const float FORCE = 100f;
     private Rigidbody rb;
     private HingeJoint motor;
 
@@ -45,6 +45,7 @@ public class SimMotor : MonoBehaviour
         motor.motor = m;
         motor.useMotor = true;
     }
+    public bool isRotating { get; private set; }
 
     private void OnDestroy()
     {
@@ -62,17 +63,19 @@ public class SimMotor : MonoBehaviour
         //rb.interpolation = isBuilding ? RigidbodyInterpolation.None : RigidbodyInterpolation.Interpolate;
     }
 
-    public Coroutine RotateRotations(float rotations)
+    public IEnumerator RotateRotations(float rotations)
     {
-        return RotateByDegrees(rotations * 360f);
+        yield return RotateByDegrees(rotations * 360f);
     }
 
-    public Coroutine RotateByDegrees(float degrees)
+    public IEnumerator RotateByDegrees(float degrees)
     {
-        return StartCoroutine(RotateToAnglePID(degrees));
+        yield return RotateToAnglePID(degrees);
     }
     private IEnumerator RotateToAnglePID(float targetDegrees)
     {
+        isRotating = true;
+
         float targetAngle = GetCurrentAngle() + targetDegrees;
         float rotatedSoFar = -0.1f;
         float startAngle = GetCurrentAngle();
@@ -110,8 +113,8 @@ public class SimMotor : MonoBehaviour
         }
 
         StopMotor();
-        transform.localRotation = Quaternion.Euler(0, 0, startAngle + targetDegrees);
         Debug.Log("✅ PID Rotation complete.");
+        Debug.Log("Still running");
     }
 
     //private IEnumerator RotateToAngle(float targetDegrees)
@@ -147,36 +150,38 @@ public class SimMotor : MonoBehaviour
         return motor.transform.localRotation.eulerAngles.z;
     }
 
-    // Handles wrap-around (360° → 0°)
-    private float AngleDelta(float a, float b)
+    public IEnumerator RunForSeconds(float seconds, bool forward)
     {
-        return Mathf.DeltaAngle(b, a);
-    }
-
-
-    public Coroutine RunForSeconds(float seconds)
-    {
-        return StartCoroutine(RunMotorForDuration(seconds));
-    }
-    
-    public void StopMotor()
-    {
-        JointMotor stopMotor = motor.motor;
-        stopMotor.targetVelocity = 0f;
-        motor.motor = stopMotor;
-    }
-    private IEnumerator RunMotorForDuration(float seconds)
-    {
+        isRotating = true;
         JointMotor a = motor.motor;
-        a.targetVelocity = speed;
+        int sign = forward ? 1 : -1;
+        a.targetVelocity = speed * sign;
         motor.motor = a;
         yield return new WaitForSeconds(seconds);
         StopMotor();
     }
+    
+    public void RotateForever(bool forward)
+    {
+        isRotating = true;
+        JointMotor a = motor.motor;
+        int sign = forward ? 1 : -1;
+        a.targetVelocity = speed * sign;
+        motor.motor = a;
+    }
+    public void StopMotor()
+    {
+        isRotating = false;
+        JointMotor stopMotor = motor.motor;
+        stopMotor.targetVelocity = 0f;
+        motor.motor = stopMotor;
+    }
 
     public void SetSpeed(float percent)
     {
+        percent = Mathf.Clamp(percent,-100,100);
         speed = MAX_SPEED * percent / 100;
+        Debug.Log(speed);
     }
 
     public void SetPID(float newP, float newD)

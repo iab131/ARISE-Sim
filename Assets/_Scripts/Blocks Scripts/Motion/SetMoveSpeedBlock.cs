@@ -1,15 +1,16 @@
 ﻿using UnityEngine;
 using TMPro;
+using System;
 
 public class SetMoveSpeedBlock : BlockBase
 {
     [Header("Inputs")]
     public TMP_InputField speedInputField;  // Accepts 0–100
 
-    public override void Execute(System.Action onComplete)
+    public override void Execute(Action onComplete)
     {
         // Parse input
-        if (!double.TryParse(speedInputField.text, out double speedPercent))
+        if (!float.TryParse(speedInputField.text, out float speedPercent))
         {
             Debug.LogWarning($"Invalid speed input on {gameObject.name}");
             return;
@@ -22,10 +23,8 @@ public class SetMoveSpeedBlock : BlockBase
         onComplete?.Invoke();
     }
 
-    private void SetMotorSpeed(double percent)
+    private void SetMotorSpeed(float percent)
     {
-        // TODO: Replace with real motor control logic
-        // Example: MotorManager.SetGlobalSpeed(percent);
-        //Debug.Log($"Motor speed set to {percent}%");
+        DrivetrainController.Instance.SetSpeedPercent(percent);
     }
 }

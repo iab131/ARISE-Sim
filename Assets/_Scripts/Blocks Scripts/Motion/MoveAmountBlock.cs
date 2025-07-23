@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
-
+using System;  // For Action
 public class MoveAmountBlock : BlockBase
 {
     [Header("Inputs")]
@@ -9,9 +9,9 @@ public class MoveAmountBlock : BlockBase
     public TMP_InputField floatInput;
     public TMP_Dropdown tmpDropdown;
 
-    public override void Execute(System.Action onComplete)
+    public override void Execute(Action onComplete)
     {
-        if (!double.TryParse(floatInput.text, out double value))
+        if (!float.TryParse(floatInput.text, out float value))
         {
             Debug.LogWarning($"Invalid numeric input on {gameObject.name}");
             onComplete?.Invoke();
@@ -21,51 +21,33 @@ public class MoveAmountBlock : BlockBase
         string unit = tmpDropdown.options[tmpDropdown.value].text.ToLower();
         int directionMultiplier = (int)directionSelector.CurrentDirection;
         string directionText = directionSelector.CurrentDirection.ToString();
-        double signedValue = value * directionMultiplier;
+        float signedValue = value * directionMultiplier;
 
         Debug.Log($"[{gameObject.name}] Move {directionText} {signedValue} {unit}");
+
+        StartCoroutine(ExecuteMotion(signedValue, unit, onComplete));
+    }
+
+    private IEnumerator ExecuteMotion(float signedValue, string unit, Action onComplete)
+    {
+        
+        if (DrivetrainController.Instance.NullCheck()) { onComplete?.Invoke(); yield break; }
 
         switch (unit)
         {
             case "rotations":
-                RotateMotor(signedValue, onComplete);
+                yield return StartCoroutine(DrivetrainController.Instance.DriveForDegrees(signedValue * 360));
                 break;
+
             case "degrees":
-                RotateMotorByDegrees(signedValue, onComplete);
+                yield return StartCoroutine(DrivetrainController.Instance.DriveForDegrees(signedValue));
                 break;
+
             case "seconds":
-                RunMotorForSeconds(signedValue, onComplete);
-                break;
-            default:
-                Debug.LogWarning("Unknown unit type.");
-                onComplete?.Invoke();
+                yield return StartCoroutine(DrivetrainController.Instance.DriveForSeconds(Math.Abs(signedValue), signedValue > 0 ));
                 break;
         }
-    }
 
-
-    private void RotateMotor(double rotations, System.Action onComplete)
-    {
-        // TODO: Replace with actual motor control logic
-        //Debug.Log($"[Motor] Rotating {rotations} rotations...");
-        onComplete?.Invoke(); // Call immediately if not waiting
-    }
-
-    private void RotateMotorByDegrees(double degrees, System.Action onComplete)
-    {
-        //Debug.Log($"[Motor] Rotating {degrees} degrees...");
-        onComplete?.Invoke();
-    }
-    private void RunMotorForSeconds(double seconds, System.Action onComplete)
-    {
-        StartCoroutine(WaitAndFinish((float)seconds, onComplete));
-    }
-
-    private IEnumerator WaitAndFinish(float seconds, System.Action onComplete)
-    {
-        //Debug.Log($"[Motor] Running for {seconds} seconds...");
-        yield return new WaitForSeconds(seconds);
-        //Debug.Log($"[Motor] Done.");
         onComplete?.Invoke();
     }
 

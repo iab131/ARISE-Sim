@@ -13,7 +13,7 @@ public class UseSampleRobot : MonoBehaviour
             if (t.gameObject.name.Contains( "Robot"))
             Destroy(t.gameObject);
         }
-
+        MotorLabelManager.Instance.SetAssignMode(false);
         GameObject go = Instantiate(sampleRobot,root.transform, root.transform);
         CameraControl.Instance.parentModel = go;
     }
