@@ -12,14 +12,19 @@ public class BlockCodeExecutor : MonoBehaviour
     public static float playStartTime;
     public static bool stopExecution = false;
 
-    
+    private static bool isRunning = false;
     public void OnPlay()
     {
+        if (isRunning)
+        {
+            return;
+        }
         ClearUnityConsole();
         Debug.Log("▶ Play started");
 
         playStartTime = Time.timeSinceLevelLoad;
         stopExecution = false;
+        isRunning = true;
 
         foreach (Transform child in codingArea)
         {
@@ -86,7 +91,10 @@ public class BlockCodeExecutor : MonoBehaviour
                 yield return null;
 
             if (stopExecution)
+            {
+                currentBlock.StopAllCoroutines();
                 break;
+            }
 
             foreach (Transform child in current)
             {
@@ -96,8 +104,9 @@ public class BlockCodeExecutor : MonoBehaviour
                 }
             }
         }
-
+        
         Debug.Log("✅ BlockGroup: Execution finished or stopped.");
+        isRunning = false;
     }
 
 
@@ -113,6 +122,7 @@ public class BlockCodeExecutor : MonoBehaviour
     public static void StopExecution()
     {
         stopExecution = true;
+        MotorSimulationManager.Instance.StopAllMotors();
         //Debug.Log("🛑 BlockGroup: Execution stopped by StopAllBlock.");
     }
 

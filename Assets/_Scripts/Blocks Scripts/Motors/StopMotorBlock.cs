@@ -1,6 +1,7 @@
-using UnityEngine;
-using TMPro;
 using System;
+using TMPro;
+using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 public class StopMotorBlock : BlockBase
 {
     [Header("Inputs")]
@@ -24,10 +25,11 @@ public class StopMotorBlock : BlockBase
         onComplete?.Invoke();
     }
 
-    private void StopMotor(string motorPort)
+    private void StopMotor(string port)
     {
-        // TODO: Replace this with your actual stop logic
-        // Example: MotorManager.StopMotor(motorPort);
-        //Debug.Log($"Motor {motorPort} stopped.");
+        if (port.Length != 1 || !char.IsLetter(port[0])) { return; }
+        var motor = MotorSimulationManager.Instance.GetMotor(port[0]);
+        if (motor == null) { return; }
+        motor.StopMotor();
     }
 }

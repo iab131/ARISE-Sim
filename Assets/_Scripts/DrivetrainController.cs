@@ -123,14 +123,15 @@ public class DrivetrainController : MonoBehaviour
         {
             // fade / reverse the right wheel
             right = speedPercent * (1f - 2f * steer / 100f);
+            //rightMotor.SetForce(right);
         }
         else if (steer < 0f)                  // turn left
         {
             // fade / reverse the left wheel
             left = speedPercent * (1f + 2f * steer / 100f);
+            //leftMotor.SetForce(left);
         }
-        Debug.Log(left);
-        Debug.Log(right);
+
         return new float[] { left, right };
     }
     public bool NullCheck()

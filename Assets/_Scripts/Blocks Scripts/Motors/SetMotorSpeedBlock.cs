@@ -1,6 +1,7 @@
-using UnityEngine;
-using TMPro;
 using System;
+using TMPro;
+using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 public class SetMotorSpeedBlock : BlockBase
 {
     [Header("Inputs")]
@@ -18,7 +19,7 @@ public class SetMotorSpeedBlock : BlockBase
         }
 
         // 2. Parse speed input
-        if (!double.TryParse(speedInputField.text, out double percent))
+        if (!float.TryParse(speedInputField.text, out float percent))
         {
             Debug.LogWarning($"[{gameObject.name}] Invalid speed input.");
             return;
@@ -30,10 +31,11 @@ public class SetMotorSpeedBlock : BlockBase
         onComplete?.Invoke();
     }
 
-    private void SetMotorSpeed(string motorPort, double percent)
+    private void SetMotorSpeed(string port, float percent)
     {
-        // TODO: Replace with actual motor controller call
-        // Example: MotorManager.SetSpeed(motorPort, percent);
-        //Debug.Log($"Speed for motor {motorPort} set to {percent}%");
+        if (port.Length != 1 || !char.IsLetter(port[0])) { return; }
+        var motor = MotorSimulationManager.Instance.GetMotor(port[0]);
+        if (motor == null) { return; }
+        motor.SetSpeed(percent);
     }
 }

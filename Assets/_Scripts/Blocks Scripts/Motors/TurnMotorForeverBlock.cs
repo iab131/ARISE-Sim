@@ -1,6 +1,6 @@
-using UnityEngine;
-using TMPro;
 using System;
+using TMPro;
+using UnityEngine;
 public class TurnMotorForeverBlock : BlockBase
 {
     [Header("Inputs")]
@@ -30,11 +30,12 @@ public class TurnMotorForeverBlock : BlockBase
         onComplete?.Invoke();
     }
 
-    private void RunMotorForever(string motorPort, int direction)
+    private void RunMotorForever(string port, int direction)
     {
-        // direction = +1 (Forward) or -1 (Backward)
-        // TODO: Replace with actual motor control logic
-        // Example: MotorManager.RunForever(motorPort, direction);
-        //Debug.Log($"Motor {motorPort} running forever in direction {direction}");
+        if (port.Length != 1 || !char.IsLetter(port[0])) { return; }
+        var motor = MotorSimulationManager.Instance.GetMotor(port[0]);
+        if (motor == null) { return; }
+        bool forward = direction == 1 ? true : false;
+        motor.RotateForever(forward);
     }
 }

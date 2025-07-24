@@ -25,4 +25,13 @@ public class MotorSimulationManager : MonoBehaviour
     }
 
     public void ClearAllMotors() => motorMap.Clear();
+
+    public void StopAllMotors()
+    {
+        foreach(var motor in motorMap.Values)
+        {
+            motor.StopMotor();
+        }
+        DrivetrainController.Instance.Stop();
+    }
 }

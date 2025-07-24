@@ -61,10 +61,10 @@ public class DragManager : MonoBehaviour
         {
             // Ignore clicks on input fields, dropdowns, etc.
             if (RectTransformUtility.RectangleContainsScreenPoint(dropArea.GetComponent<RectTransform>(), Input.mousePosition) &&
-                result.gameObject.GetComponent<InputField>() != null ||
+                (result.gameObject.GetComponent<InputField>() != null ||
                 result.gameObject.GetComponent<TMP_InputField>() != null ||
                 result.gameObject.GetComponent<TMP_Dropdown>() != null ||
-                result.gameObject.GetComponent<Button>() != null
+                result.gameObject.GetComponent<Button>() != null)
             )
             {
                 return;
