@@ -1,10 +1,24 @@
-using UnityEngine;
-using TMPro;
 using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
 
-public class WaitSecondsBlock : BlockBase
+public class WaitSecondsBlock : BlockBase, IBlockSavable
 {
     public TMP_InputField secondsInputField;
+    public Dictionary<string, string> SaveInputs()
+    {
+        return new Dictionary<string, string>
+    {
+        { "seconds", secondsInputField.text }
+    };
+    }
+
+    public void LoadInputs(Dictionary<string, string> inputs)
+    {
+        if (inputs.TryGetValue("seconds", out string value))
+            secondsInputField.text = value;
+    }
 
     public override void Execute(System.Action onComplete)
     {

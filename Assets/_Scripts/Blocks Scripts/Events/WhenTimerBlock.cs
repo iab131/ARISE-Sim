@@ -1,9 +1,23 @@
-using UnityEngine;
+using System.Collections.Generic;
 using TMPro;
+using UnityEngine;
 
-public class WhenTimerBlock : BlockBase, IConditionalStart
+public class WhenTimerBlock : BlockBase, IConditionalStart, IBlockSavable
 {
     public TMP_InputField timeInputField;
+    public Dictionary<string, string> SaveInputs()
+    {
+        return new Dictionary<string, string>
+    {
+        { "threshold", timeInputField.text }
+    };
+    }
+
+    public void LoadInputs(Dictionary<string, string> inputs)
+    {
+        if (inputs.TryGetValue("threshold", out string value))
+            timeInputField.text = value;
+    }
 
     public override void Execute(System.Action onComplete)
     {

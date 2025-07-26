@@ -1,9 +1,23 @@
-using UnityEngine;
 using System;
-public class StartMovingBlock : BlockBase
+using System.Collections.Generic;
+using UnityEngine;
+public class StartMovingBlock : BlockBase, IBlockSavable
 {
     [Header("Inputs")]
     public UpDownSelector directionSelector;
+    public Dictionary<string, string> SaveInputs()
+    {
+        return new Dictionary<string, string>
+    {
+        { "direction", directionSelector.CurrentDirection.ToString() }
+    };
+    }
+
+    public void LoadInputs(Dictionary<string, string> inputs)
+    {
+        if (inputs.TryGetValue("direction", out string dir))
+            directionSelector.SetDirectionFromString(dir);
+    }
 
     public override void Execute(Action onComplete)
     {

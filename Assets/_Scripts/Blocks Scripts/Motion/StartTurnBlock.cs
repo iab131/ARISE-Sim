@@ -1,10 +1,24 @@
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
 using System;
-public class StartTurnBlock : BlockBase
+public class StartTurnBlock : BlockBase, IBlockSavable
 {
     [Header("Inputs")]
     public TMP_InputField directionInputField;  // Format: "Right: 40", "Left: -30"
+    public Dictionary<string, string> SaveInputs()
+    {
+        return new Dictionary<string, string>
+    {
+        { "directionInput", directionInputField.text }
+    };
+    }
+
+    public void LoadInputs(Dictionary<string, string> inputs)
+    {
+        if (inputs.TryGetValue("directionInput", out string value))
+            directionInputField.text = value;
+    }
 
     public override void Execute(Action onComplete)
     {

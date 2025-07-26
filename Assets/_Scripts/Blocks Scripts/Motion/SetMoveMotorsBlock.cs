@@ -1,12 +1,31 @@
-﻿using TMPro;
+﻿using System;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using System;
 
-public class SetMoveMotorsBlock : BlockBase
+public class SetMoveMotorsBlock : BlockBase, IBlockSavable
 {
     [Header("Motor Inputs (A–F)")]
     public TMP_InputField leftMotorInput;
     public TMP_InputField rightMotorInput;
+
+    public Dictionary<string, string> SaveInputs()
+    {
+        return new Dictionary<string, string>
+    {
+        { "leftMotor", leftMotorInput.text },
+        { "rightMotor", rightMotorInput.text }
+    };
+    }
+
+    public void LoadInputs(Dictionary<string, string> inputs)
+    {
+        if (inputs.TryGetValue("leftMotor", out string left))
+            leftMotorInput.text = left;
+
+        if (inputs.TryGetValue("rightMotor", out string right))
+            rightMotorInput.text = right;
+    }
 
     public override void Execute(Action onComplete)
     {

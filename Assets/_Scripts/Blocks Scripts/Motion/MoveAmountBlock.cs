@@ -1,13 +1,23 @@
-using UnityEngine;
-using TMPro;
-using System.Collections;
 using System;  // For Action
-public class MoveAmountBlock : BlockBase
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+public class MoveAmountBlock : BlockBase, IBlockSavable
 {
     [Header("Inputs")]
     public UpDownSelector directionSelector;
     public TMP_InputField floatInput;
     public TMP_Dropdown tmpDropdown;
+    public Dictionary<string, string> SaveInputs()
+    {
+        return new Dictionary<string, string>
+    {
+        { "direction", directionSelector.CurrentDirection.ToString() },
+        { "distance", floatInput.text },
+        { "units", tmpDropdown.value.ToString() }
+    };
+    }
 
     public override void Execute(Action onComplete)
     {
@@ -49,6 +59,17 @@ public class MoveAmountBlock : BlockBase
         }
 
         onComplete?.Invoke();
+    }
+    public void LoadInputs(Dictionary<string, string> inputs)
+    {
+        if (inputs.TryGetValue("direction", out string dir))
+            directionSelector.SetDirectionFromString(dir);
+
+        if (inputs.TryGetValue("distance", out string dist))
+            floatInput.text = dist;
+
+        if (inputs.TryGetValue("units", out string unitIndex))
+            tmpDropdown.value = int.Parse(unitIndex);
     }
 
 }

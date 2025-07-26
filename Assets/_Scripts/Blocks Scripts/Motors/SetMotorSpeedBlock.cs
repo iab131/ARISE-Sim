@@ -1,12 +1,29 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-public class SetMotorSpeedBlock : BlockBase
+public class SetMotorSpeedBlock : BlockBase, IBlockSavable
 {
     [Header("Inputs")]
     public TMP_InputField motorInputField;      // A–F (validated by input field)
     public TMP_InputField speedInputField;      // 0–100%
+    public Dictionary<string, string> SaveInputs()
+    {
+        return new Dictionary<string, string>
+    {
+        { "motor", motorInputField.text },
+        { "speed", speedInputField.text }
+    };
+    }
+
+    public void LoadInputs(Dictionary<string, string> inputs)
+    {
+        if (inputs.TryGetValue("motor", out string motor))
+            motorInputField.text = motor;
+
+        if (inputs.TryGetValue("speed", out string speed))
+            speedInputField.text = speed;
+    }
 
     public override void Execute(Action onComplete)
     {

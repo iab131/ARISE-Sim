@@ -1,11 +1,25 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-public class StopMotorBlock : BlockBase
+public class StopMotorBlock : BlockBase, IBlockSavable
 {
     [Header("Inputs")]
     public TMP_InputField motorInputField; // A–F (validated externally)
+    public Dictionary<string, string> SaveInputs()
+    {
+        return new Dictionary<string, string>
+    {
+        { "motor", motorInputField.text }
+    };
+    }
+
+    public void LoadInputs(Dictionary<string, string> inputs)
+    {
+        if (inputs.TryGetValue("motor", out string motor))
+            motorInputField.text = motor;
+    }
 
     public override void Execute(Action onComplete)
     {

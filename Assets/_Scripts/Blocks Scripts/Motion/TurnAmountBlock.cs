@@ -1,14 +1,36 @@
-﻿using UnityEngine;
-using TMPro;
-using System;
+﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
 
-public class TurnAmountBlock : BlockBase
+public class TurnAmountBlock : BlockBase, IBlockSavable
 {
     [Header("Inputs")]
     public TMP_InputField directionInputField;   // e.g., "Right: 50"
     public TMP_InputField valueInputField;       // e.g., 90
     public TMP_Dropdown unitDropdown;            // "rotations", "degrees", "seconds"
+    public Dictionary<string, string> SaveInputs()
+    {
+        return new Dictionary<string, string>
+    {
+        { "directionInput", directionInputField.text },
+        { "value", valueInputField.text },
+        { "unit", unitDropdown.value.ToString() }
+    };
+    }
+
+    public void LoadInputs(Dictionary<string, string> inputs)
+    {
+        if (inputs.TryGetValue("directionInput", out string dir))
+            directionInputField.text = dir;
+
+        if (inputs.TryGetValue("value", out string val))
+            valueInputField.text = val;
+
+        if (inputs.TryGetValue("unit", out string unitIndex))
+            unitDropdown.value = int.Parse(unitIndex);
+    }
 
     public override void Execute(Action onComplete)
     {

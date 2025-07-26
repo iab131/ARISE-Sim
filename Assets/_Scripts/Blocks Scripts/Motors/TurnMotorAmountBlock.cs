@@ -1,15 +1,41 @@
 using System;  // For Action
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class TurnMotorAmountBlock : BlockBase
+public class TurnMotorAmountBlock : BlockBase, IBlockSavable
 {
     [Header("Inputs")]
     public TMP_InputField motorInputField;        // A–F
     public UpDownSelector directionSelector;      // Forward/Backward
     public TMP_InputField valueInputField;        // Numeric value
     public TMP_Dropdown unitDropdown;             // Unit: rotations, degrees, seconds
+    public Dictionary<string, string> SaveInputs()
+    {
+        return new Dictionary<string, string>
+    {
+        { "motor", motorInputField.text },
+        { "value", valueInputField.text },
+        { "unit", unitDropdown.value.ToString() },
+        { "direction", directionSelector.CurrentDirection.ToString() }
+    };
+    }
+
+    public void LoadInputs(Dictionary<string, string> inputs)
+    {
+        if (inputs.TryGetValue("motor", out string motor))
+            motorInputField.text = motor;
+
+        if (inputs.TryGetValue("value", out string value))
+            valueInputField.text = value;
+
+        if (inputs.TryGetValue("unit", out string unitIndex))
+            unitDropdown.value = int.Parse(unitIndex);
+
+        if (inputs.TryGetValue("direction", out string dir))
+            directionSelector.SetDirectionFromString(dir);
+    }
 
     public override void Execute(Action onComplete)
     {

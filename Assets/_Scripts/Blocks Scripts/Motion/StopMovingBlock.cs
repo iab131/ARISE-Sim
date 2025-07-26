@@ -10,10 +10,4 @@ public class StopMovingBlock : BlockBase
         onComplete?.Invoke();
     }
 
-    private void StopMotors()
-    {
-        // TODO: Replace with your actual motor stop logic
-        // For now:
-        //Debug.Log("Motors stopped.");
-    }
 }

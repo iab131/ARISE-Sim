@@ -131,4 +131,16 @@ public class UpDownSelector : MonoBehaviour
         }
         return false; // Clicked outside popup
     }
+
+    public void SetDirectionFromString(string dirString)
+    {
+        if (System.Enum.TryParse(dirString, out Direction dir))
+        {
+            if (dir == Direction.Forward)
+                SelectUp();
+            else
+                SelectDown();
+        }
+    }
+
 }

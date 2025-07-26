@@ -5,6 +5,7 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class BlockCodeExecutor : MonoBehaviour
 {
@@ -34,6 +35,32 @@ public class BlockCodeExecutor : MonoBehaviour
                 RunFromStartBlock(child);
             }
         }
+    }
+
+    public void SaveBlockCode()
+    {
+        BlockSaveList saveList = new BlockSaveList();
+
+        foreach (Transform child in codingArea)
+        {
+            string layerName = LayerMask.LayerToName(child.gameObject.layer);
+            if (layerName.Contains("StartBlock"))
+            {
+                BlockSaveData data = BlockSaveManager.Instance.SaveBlockChain(child);
+                if (data != null)
+                    saveList.blocks.Add(data);
+            }
+        }
+
+        string json = JsonUtility.ToJson(saveList, true);
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+    WebGLFileDownloader.DownloadJson("block-save.json", json);
+#else
+        string path = Path.Combine(Application.persistentDataPath, "block-save.json");
+        File.WriteAllText(path, json);
+        Debug.Log("Saved to: " + path);
+#endif
     }
 
     private void RunFromStartBlock(Transform startBlock)

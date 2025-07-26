@@ -1,11 +1,25 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
 using TMPro;
-using System;
+using UnityEngine;
 
-public class SetMoveSpeedBlock : BlockBase
+public class SetMoveSpeedBlock : BlockBase, IBlockSavable
 {
     [Header("Inputs")]
     public TMP_InputField speedInputField;  // Accepts 0–100
+    public Dictionary<string, string> SaveInputs()
+    {
+        return new Dictionary<string, string>
+    {
+        { "speed", speedInputField.text }
+    };
+    }
+
+    public void LoadInputs(Dictionary<string, string> inputs)
+    {
+        if (inputs.TryGetValue("speed", out string speed))
+            speedInputField.text = speed;
+    }
 
     public override void Execute(Action onComplete)
     {
