@@ -8,7 +8,8 @@ public class SimButtonController : MonoBehaviour
     {
         Transform robot = SimRobotManager.FindRobot(simRoot);
         if (robot != null) 
-        robot.position = SimRobotManager.robotRegPos;
+        robot.localPosition = SimRobotManager.robotRegPos;
+        robot.localRotation = SimRobotManager.robotRegRot;
     }
     public void OnToggleCameraMode()
     {

@@ -102,11 +102,13 @@ private static extern void UploadJsonFile(string gameObjectName, string methodNa
 #endif
     }
 
-    public void SaveAs(string encrypted)
+    private void SaveAs(string encrypted)
     {
-        string path = StandaloneFileBrowser.SaveFilePanel("Save Block Code", "", "BlockCode", "json");
+        string path = StandaloneFileBrowser.SaveFilePanel("Save Block Code", "", "BlockCode", "fllcode");
         if (!string.IsNullOrEmpty(path))
         {
+            if (!path.EndsWith(".fllcode"))
+                path += ".fllcode";
             File.WriteAllText(path, encrypted);
             Debug.Log("Saved to: " + path);
         }
@@ -184,12 +186,19 @@ private static extern void UploadJsonFile(string gameObjectName, string methodNa
         LoadBlockCode(json);
     }
 
-    public void LoadFromFilePicker()
+    private void LoadFromFilePicker()
     {
-        string[] paths = StandaloneFileBrowser.OpenFilePanel("Open Block Code", "", "json", false);
+        string[] paths = StandaloneFileBrowser.OpenFilePanel("Open Block Code", "", "fllcode", false);
         if (paths.Length > 0 && File.Exists(paths[0]))
         {
-            string encrypted = File.ReadAllText(paths[0]);
+            string path = paths[0];
+
+            if (Path.GetExtension(path) != ".fllcode")
+            {
+                Debug.LogWarning("Wrong file type selected.");
+                return;
+            }
+            string encrypted = File.ReadAllText(path);
             string json = JsonEncryptor.Decrypt(encrypted);
 
             // Optional: Clear existing blocks

@@ -101,9 +101,11 @@ public class RobotSaveManager : MonoBehaviour
 #if UNITY_WEBGL && !UNITY_EDITOR
     WebGLFileDownloader.DownloadJson("robot-save.json", encrypted);
 #else
-        var path = StandaloneFileBrowser.SaveFilePanel("Save Robot", "", "FLLRobot", "json");
+        var path = StandaloneFileBrowser.SaveFilePanel("Save Robot", "", "MyRobot", "fllrobot");
         if (!string.IsNullOrEmpty(path))
         {
+            if (!path.EndsWith(".fllrobot"))
+                path += ".fllrobot";
             //Debug.Log(json);
             File.WriteAllText(path, encrypted);
             Debug.Log("Saved to: " + path);

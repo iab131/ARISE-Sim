@@ -4,6 +4,7 @@ public static class SimRobotManager
 {
 
     public static Vector3 robotRegPos;
+    public static Quaternion robotRegRot;
     //public static GameObject SimRobot;
     public static void SpawnSimulationRobot(
         NavBarController.View targetView,
@@ -61,7 +62,8 @@ public static class SimRobotManager
         if (offset > 0f)
         {
             groupCopy.transform.position += new Vector3(0, offset, 0);
-            robotRegPos = groupCopy.transform.position;
+            robotRegPos = groupCopy.transform.localPosition;
+            robotRegRot = groupCopy.transform.localRotation;
         }
 
         Rigidbody rb = groupCopy.AddComponent<Rigidbody>();

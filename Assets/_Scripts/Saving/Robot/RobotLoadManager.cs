@@ -102,10 +102,17 @@ public class RobotLoadManager : MonoBehaviour
         Debug.LogWarning("WebGL file upload must be handled via JS bridge.");
         // Hook up Unity <-> JS integration here for upload
 #else
-        var paths = StandaloneFileBrowser.OpenFilePanel("Open Robot File", "", "json", false);
+        var paths = StandaloneFileBrowser.OpenFilePanel("Open Robot File", "", "fllrobot", false);
         if (paths.Length > 0 && File.Exists(paths[0]))
         {
-            string encrypted = File.ReadAllText(paths[0]);
+            string path = paths[0];
+            if (Path.GetExtension(path) != ".fllrobot")
+            {
+                Debug.LogWarning("Selected file is not a valid robot save file.");
+                return;
+            }
+
+            string encrypted = File.ReadAllText(path);
 
             // If using encryption:
             string json = JsonEncryptor.Decrypt(encrypted);
