@@ -6,6 +6,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System;
+using System.Xml;
+using Newtonsoft.Json;
 
 public class BlockCodeExecutor : MonoBehaviour
 {
@@ -36,8 +39,8 @@ public class BlockCodeExecutor : MonoBehaviour
             }
         }
     }
-
-    public void SaveBlockCode()
+ 
+    public void SaveBlockCode() 
     {
         BlockSaveList saveList = new BlockSaveList();
 
@@ -51,15 +54,25 @@ public class BlockCodeExecutor : MonoBehaviour
                     saveList.blocks.Add(data);
             }
         }
+        string json = JsonConvert.SerializeObject(saveList, Formatting.Indented);
 
-        string json = JsonUtility.ToJson(saveList, true);
+        //string json = JsonUtility.ToJson(saveList, true);
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     WebGLFileDownloader.DownloadJson("block-save.json", json);
 #else
         string path = Path.Combine(Application.persistentDataPath, "block-save.json");
-        File.WriteAllText(path, json);
-        Debug.Log("Saved to: " + path);
+        try
+        {
+            File.WriteAllText(path, json);
+            Debug.Log("Saved to: " + path);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("File save failed: " + e.Message);
+        }
+
+        Debug.Log(json);
 #endif
     }
 

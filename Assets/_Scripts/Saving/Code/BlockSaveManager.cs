@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 /// <summary>
@@ -46,7 +46,12 @@ public class BlockSaveManager : MonoBehaviour
             if (child.CompareTag("Block"))
             {
                 data.nextBlock = SaveBlockChain(child);
-                break; // only follow one linear child (like vertical chain)
+                Debug.Log(child.gameObject.name);
+                if (data.nextBlock != null)
+                {
+                    Debug.Log("→ Saved next block: " + data.nextBlock.prefabName);
+                }
+
             }
         }
 
