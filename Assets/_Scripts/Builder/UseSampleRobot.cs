@@ -15,6 +15,8 @@ public class UseSampleRobot : MonoBehaviour
         }
         MotorLabelManager.Instance.SetAssignMode(false);
         GameObject go = Instantiate(sampleRobot,root.transform, root.transform);
+        go.name = "Robot";
         CameraControl.Instance.parentModel = go;
+        ControlManager.Instance.spawnRoot = go.transform;
     }
 }

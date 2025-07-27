@@ -559,6 +559,7 @@ public class ControlManager : MonoBehaviour
                 pivot = pegHole.position;
                 axis = hole.right;
                 pegHole.RotateAround(pivot,axis,angle);
+                Debug.Log(pegHole.name);
                 break;
             case "up":
                 axis = hole.up;

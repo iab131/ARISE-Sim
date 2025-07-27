@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System;
-using System.Xml;
 using Newtonsoft.Json;
 
 public class BlockCodeExecutor : MonoBehaviour
@@ -40,42 +39,6 @@ public class BlockCodeExecutor : MonoBehaviour
         }
     }
  
-    public void SaveBlockCode() 
-    {
-        BlockSaveList saveList = new BlockSaveList();
-
-        foreach (Transform child in codingArea)
-        {
-            string layerName = LayerMask.LayerToName(child.gameObject.layer);
-            if (layerName.Contains("StartBlock"))
-            {
-                BlockSaveData data = BlockSaveManager.Instance.SaveBlockChain(child);
-                if (data != null)
-                    saveList.blocks.Add(data);
-            }
-        }
-        string json = JsonConvert.SerializeObject(saveList, Formatting.Indented);
-
-        //string json = JsonUtility.ToJson(saveList, true);
-
-#if UNITY_WEBGL && !UNITY_EDITOR
-    WebGLFileDownloader.DownloadJson("block-save.json", json);
-#else
-        string path = Path.Combine(Application.persistentDataPath, "block-save.json");
-        try
-        {
-            File.WriteAllText(path, json);
-            Debug.Log("Saved to: " + path);
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("File save failed: " + e.Message);
-        }
-
-        Debug.Log(json);
-#endif
-    }
-
     private void RunFromStartBlock(Transform startBlock)
     {
         BlockBase block = startBlock.GetComponent<BlockBase>();
