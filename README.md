@@ -54,11 +54,11 @@ This is a work-in-progress team project. Feedback and contributions are welcome!
 
 ---
 
-## 🎮 Download the Build
+## 🎮 Download the Simulator
 
-[⬇️ Download the latest ZIP build](https://github.com/your-username/your-repo-name/releases/latest)
+👉 [Download FLL Simulator Build (FLL.Sim.zip)](https://github.com/iab131/ARISE-FLL-Sim/releases/latest)
 
-> Or check the [Releases](https://github.com/your-username/your-repo-name/releases) tab for all versions.
+> ⚠️ **Note:** Ignore the “Source code” downloads — they are just GitHub snapshots and not the simulator itself.
 
 ---
 
