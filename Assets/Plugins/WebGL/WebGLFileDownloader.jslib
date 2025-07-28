@@ -1,18 +1,13 @@
 mergeInto(LibraryManager.library, {
-  DownloadFile: function (fileNamePtr, contentPtr) {
-    const fileName = UTF8ToString(fileNamePtr);
+  DownloadFile: function(filenamePtr, contentPtr) {
+    const filename = UTF8ToString(filenamePtr);
     const content = UTF8ToString(contentPtr);
 
-    const blob = new Blob([content], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-
+    const blob = new Blob([content], { type: "application/octet-stream" });
     const a = document.createElement("a");
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
     a.click();
-    document.body.removeChild(a);
-
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(a.href);
   }
 });

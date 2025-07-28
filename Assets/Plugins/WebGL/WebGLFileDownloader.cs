@@ -2,6 +2,9 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
 
+/// <summary>
+/// Static helper for triggering WebGL file downloads via JavaScript.
+/// </summary>
 public static class WebGLFileDownloader
 {
     [DllImport("__Internal")]

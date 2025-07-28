@@ -1,7 +1,10 @@
+#if UNITY_WEBGL && !UNITY_EDITOR
+using System.Runtime.InteropServices;
+#endif
+
 using SFB;
 using System.Collections.Generic;
 using System.IO;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class RobotLoadManager : MonoBehaviour
@@ -19,7 +22,11 @@ public class RobotLoadManager : MonoBehaviour
 
         Instance = this;
     }
+#if UNITY_WEBGL && !UNITY_EDITOR
+    [DllImport("__Internal")]
+    private static extern void UploadJsonFile(string gameObjectName, string methodName);
 
+#endif
     public void LoadRobot(string json)
     {
         if (string.IsNullOrEmpty(json))
@@ -99,8 +106,7 @@ public class RobotLoadManager : MonoBehaviour
     public void LoadRobotFromFile()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        Debug.LogWarning("WebGL file upload must be handled via JS bridge.");
-        // Hook up Unity <-> JS integration here for upload
+        UploadJsonFile(gameObject.name, "OnRobotJsonLoaded");
 #else
         var paths = StandaloneFileBrowser.OpenFilePanel("Open Robot File", "", "fllrobot", false);
         if (paths.Length > 0 && File.Exists(paths[0]))

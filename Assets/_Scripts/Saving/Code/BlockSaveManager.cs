@@ -29,7 +29,10 @@ public class BlockSaveManager : MonoBehaviour
     }
 #if UNITY_WEBGL && !UNITY_EDITOR
 [DllImport("__Internal")]
-private static extern void UploadJsonFile(string gameObjectName, string methodName);
+    private static extern void UploadJsonFile(string gameObjectName, string methodName);
+
+[DllImport("__Internal")]
+private static extern void DownloadFile(string filename, string content);
 #endif
 
     /// <summary>
@@ -84,7 +87,7 @@ private static extern void UploadJsonFile(string gameObjectName, string methodNa
         //string json = JsonUtility.ToJson(saveList, true);
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-    WebGLFileDownloader.DownloadJson("block-save.json", encryptedJson);
+    DownloadFile("mycode.fllcode", encryptedJson);
 #else
         SaveAs(encryptedJson);
 
@@ -155,7 +158,7 @@ private static extern void UploadJsonFile(string gameObjectName, string methodNa
     public void OnClickLoadJsonWebGL()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-    UploadJsonFile(gameObject.name, "OnJsonFileLoaded");
+    UploadJsonFile(gameObject.name, "OnRobotJsonLoaded");
 #else
         LoadFromFilePicker();
         //string path = Path.Combine(Application.persistentDataPath, "block-save.json");

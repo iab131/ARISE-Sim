@@ -1,3 +1,8 @@
+#if UNITY_WEBGL && !UNITY_EDITOR
+using System.Runtime.InteropServices;
+#endif
+
+
 using SFB;
 using System.Collections.Generic;
 using System.IO;
@@ -18,6 +23,10 @@ public class RobotSaveManager : MonoBehaviour
 
         Instance = this;
     }
+#if UNITY_WEBGL && !UNITY_EDITOR
+[DllImport("__Internal")]
+private static extern void DownloadFile(string filename, string content);
+#endif
     public string SaveRobot()
     {
         Transform robot = robotRoot.transform.Find("Robot");
@@ -99,7 +108,7 @@ public class RobotSaveManager : MonoBehaviour
         string encrypted = JsonEncryptor.Encrypt(json);
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-    WebGLFileDownloader.DownloadJson("robot-save.json", encrypted);
+    DownloadFile("myrobot.fllrobot", encrypted);
 #else
         var path = StandaloneFileBrowser.SaveFilePanel("Save Robot", "", "MyRobot", "fllrobot");
         if (!string.IsNullOrEmpty(path))
