@@ -72,21 +72,34 @@ Feel free to reach out to either of us through GitHub:
 
 ---
 
-# 📘 User Manual
+
+## 📘 User Manual
 
 ### 🔧 Building Mode
-- `Q` – Move mode
-- `W` – Build mode
-- Click a peg/hole to select, then a second to target
-- `F` – Flip 180°
-- `← / →` – Rotate 45°
-- `↑ / ↓` – Push/pull axle
-- `Enter` – Confirm snap
-- `Esc` – Cancel
-- `Ctrl + D` – Duplicate part
-- `Shift + F` – Refocus camera
-- `Delete` / `Backspace` – Delete hovered part
-- **Set Motor:** Click “Set Motor” button → click motor to label
+
+#### 🕹️ Toggle & Control
+- `Q` — Switch to **Move Mode**
+- `W` — Switch to **Build Mode**
+- Click a peg/hole to select the first part  
+  Then click a second peg/hole/axle to set the target
+
+#### 🔄 Alignment & Rotation
+- `F` — Flip the selected part 180°
+- `← / →` — Rotate part by 45° left/right
+- `↑ / ↓` — Push/pull axle in or out
+
+#### ✅ Actions
+- `Enter` — Confirm the snap connection
+- `Esc` — Cancel current placement
+- `Ctrl + D` — Duplicate hovered part
+- `Delete` / `Backspace` — Delete hovered part
+- `Shift + F` — Refocus camera on robot
+
+#### ⚙️ Set Motor
+- Click **“Set Motor”** button → then click the motor to label it
+
+---
 
 ### ▶️ Simulation Mode
-- `C` – Change camera
+
+- `C` — Change camera view
