@@ -70,9 +70,9 @@ Feel free to reach out to either of us through GitHub:
 - [Udula Abeykoon](https://github.com/UdulaAbeykoon)  
 - [Enhe Bai](https://github.com/iab131)
 
+---
 
-<details>
-<summary>📘 User Manual</summary>
+# 📘 User Manual
 
 ### 🔧 Building Mode
 - `Q` – Move mode
@@ -90,5 +90,3 @@ Feel free to reach out to either of us through GitHub:
 
 ### ▶️ Simulation Mode
 - `C` – Change camera
-
-</details>
