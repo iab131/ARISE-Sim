@@ -54,12 +54,12 @@ This is a work-in-progress team project. Feedback and contributions are welcome!
 
 ---
 
-## 🎮 Download the Simulator
+## 🎮 Download
 
-👉 [Download FLL Simulator Build (FLL.Sim.zip)](https://github.com/iab131/ARISE-FLL-Sim/releases/latest)
+[⬇️ Download Simulator](https://github.com/iab131/ARISE-FLL-Sim/releases/download/Beta/FLL.Sim.zip)
+> No installation needed — just unzip and run!
 
-> ⚠️ **Note:** Ignore the “Source code” downloads — they are just GitHub snapshots and not the simulator itself.
-
+📘 [Read the User Manual](#-user-manual) 
 ---
 
 ## 📬 Contact
@@ -69,3 +69,26 @@ Feel free to reach out to either of us through GitHub:
 
 - [Udula Abeykoon](https://github.com/UdulaAbeykoon)  
 - [Enhe Bai](https://github.com/iab131)
+
+
+<details>
+<summary>📘 User Manual</summary>
+
+### 🔧 Building Mode
+- `Q` – Move mode
+- `W` – Build mode
+- Click a peg/hole to select, then a second to target
+- `F` – Flip 180°
+- `← / →` – Rotate 45°
+- `↑ / ↓` – Push/pull axle
+- `Enter` – Confirm snap
+- `Esc` – Cancel
+- `Ctrl + D` – Duplicate part
+- `Shift + F` – Refocus camera
+- `Delete` / `Backspace` – Delete hovered part
+- **Set Motor:** Click “Set Motor” button → click motor to label
+
+### ▶️ Simulation Mode
+- `C` – Change camera
+
+</details>
