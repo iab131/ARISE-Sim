@@ -23,8 +23,8 @@ public class RobotLoadManager : MonoBehaviour
         Instance = this;
     }
 #if UNITY_WEBGL && !UNITY_EDITOR
-    [DllImport("__Internal")]
-    private static extern void UploadJsonFile(string gameObjectName, string methodName);
+    //[DllImport("__Internal")]
+    //private static extern void UploadJsonFile(string gameObjectName, string methodName);
 
 #endif
     public void LoadRobot(string json)
@@ -106,7 +106,7 @@ public class RobotLoadManager : MonoBehaviour
     public void LoadRobotFromFile()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        UploadJsonFile(gameObject.name, "OnRobotJsonLoaded");
+        //UploadJsonFile(gameObject.name, "OnRobotJsonLoaded");
 #else
         var paths = StandaloneFileBrowser.OpenFilePanel("Open Robot File", "", "fllrobot", false);
         if (paths.Length > 0 && File.Exists(paths[0]))

@@ -24,8 +24,8 @@ public class RobotSaveManager : MonoBehaviour
         Instance = this;
     }
 #if UNITY_WEBGL && !UNITY_EDITOR
-[DllImport("__Internal")]
-private static extern void DownloadFile(string filename, string content);
+//[DllImport("__Internal")]
+//private static extern void DownloadFile(string filename, string content);
 #endif
     public string SaveRobot()
     {
@@ -108,7 +108,7 @@ private static extern void DownloadFile(string filename, string content);
         string encrypted = JsonEncryptor.Encrypt(json);
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-    DownloadFile("myrobot.fllrobot", encrypted);
+    //DownloadFile("myrobot.fllrobot", encrypted);
 #else
         var path = StandaloneFileBrowser.SaveFilePanel("Save Robot", "", "MyRobot", "fllrobot");
         if (!string.IsNullOrEmpty(path))

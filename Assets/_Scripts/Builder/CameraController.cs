@@ -29,6 +29,10 @@ public class CameraControl : MonoBehaviour
     }
     void Update()
     {
+        if (NavBarController.currentview != NavBarController.View.Building)
+        {
+            return;
+        }
         if (Input.GetMouseButton(1)) // Right click to orbit
             CamOrbit();
 

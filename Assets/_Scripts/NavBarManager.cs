@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class NavBarController : MonoBehaviour
 {
@@ -12,7 +13,8 @@ public class NavBarController : MonoBehaviour
 
     [Header("Default View on Start")]
     [SerializeField] private View defaultView = View.BlockCoding;
-
+    public static View currentview = View.BlockCoding;
+    
     [Header("2D UI Panels")]
     [SerializeField] private GameObject blockCodingUIPanel;
     [SerializeField] private GameObject buildingUIPanel;
@@ -39,6 +41,7 @@ public class NavBarController : MonoBehaviour
 
     private void SwitchToView(View targetView)
     {
+        currentview = targetView;
         //copy code
         if (View.AR == targetView || View.Simulation == targetView)
         {
