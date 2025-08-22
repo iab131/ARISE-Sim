@@ -7,9 +7,20 @@ public class SimButtonController : MonoBehaviour
     public void OnResetRobot()
     {
         Transform robot = SimRobotManager.FindRobot(simRoot);
-        if (robot != null) 
-        robot.localPosition = SimRobotManager.robotRegPos;
-        robot.localRotation = SimRobotManager.robotRegRot;
+        if (robot != null)
+        {
+            // reset transform
+            robot.localPosition = SimRobotManager.robotRegPos;
+            robot.localRotation = SimRobotManager.robotRegRot;
+
+            // reset rigidbody (if present)
+            Rigidbody rb = robot.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+        }
     }
     public void OnToggleCameraMode()
     {

@@ -39,7 +39,7 @@ public class MotorLabel : MonoBehaviour
     private float baseY;                   // world-space offset after clearance
     private float spinAngle;
     private Vector3 startScale, targetScale;
-    private static int _nextIndex = 1;   // shared by all instances
+    public static int _nextIndex = 1;   // shared by all instances
     public int MotorIndex { get; private set; }
     public char MotorLetter { get; private set; }
 
@@ -59,7 +59,8 @@ public class MotorLabel : MonoBehaviour
     }
     private void OnDestroy()
     {
-        allLabels.Remove(this);
+        allLabels.Remove(this); 
+        MotorLabelManager.Instance.ReleaseLetter(this);
     }
     public static IEnumerable<MotorLabel> All => allLabels;
 
@@ -163,4 +164,6 @@ public class MotorLabel : MonoBehaviour
 
         MotorLabelManager.Instance.OnMotorClicked(this);
     }
+
+
 }

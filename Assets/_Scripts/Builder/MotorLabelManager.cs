@@ -180,4 +180,24 @@ public class MotorLabelManager : MonoBehaviour
         if (currentTarget) currentTarget.SetHovered(false);
         currentTarget = null;
     }
+
+    public void ReleaseLetter(MotorLabel label)
+    {
+        if (!label) return;
+
+        char letterToRelease = '\0';
+        foreach (var kv in takenLetters)
+        {
+            if (kv.Value == label)
+            {
+                letterToRelease = kv.Key;
+                break;
+            }
+        }
+
+        if (letterToRelease != '\0')
+        {
+            takenLetters.Remove(letterToRelease);
+        }
+    }
 }

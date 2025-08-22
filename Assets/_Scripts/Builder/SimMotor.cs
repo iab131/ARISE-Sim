@@ -52,6 +52,7 @@ public class SimMotor : MonoBehaviour
     private void OnDestroy()
     {
         allMotors.Remove(this);
+        MotorSimulationManager.Instance.ClearMotor(this);
     }
     public void SetMotorLabel(char label)
     {
