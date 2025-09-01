@@ -1,7 +1,6 @@
+# 🌟 ARISE SIM
 
-
-# 🌟 FLL Simulator
-### *Build. Code. Simulate. Explore.*
+### _Build. Code. Simulate. Explore._
 
 Welcome to **FLL Simulator**, a next-generation robotics experience designed for students, educators, and creators. This interactive simulation tool brings the excitement of **FIRST LEGO League** into an immersive **3D** and **augmented reality** environment, combining creativity, problem-solving, and hands-on learning.
 
@@ -16,18 +15,22 @@ Welcome to **FLL Simulator**, a next-generation robotics experience designed for
 ## 🚀 Features
 
 ### 🧱 Block Coding Made Easy
+
 Create powerful robot programs with a drag-and-drop coding interface inspired by Scratch.  
 No prior experience needed — just imagination and curiosity.
 
 ### 🤖 Build Your Own Robot
+
 Design and assemble your custom robot using a full library of LEGO-style parts.  
 Snap pegs into holes, configure motors, and bring your design to life with precision and creativity.
 
 ### 🌍 Test in Virtual Worlds
+
 Simulate your robot in real-time inside dynamic 3D environments.  
 Debug your logic, tweak your build, and refine your strategies instantly.
 
 ### 📱 Augmented Reality Mode
+
 Turn your home, classroom, or backyard into a robotics playground.  
 Run your robot in AR using your device’s camera for an interactive, real-world experience.
 
@@ -41,18 +44,18 @@ We built this simulator as a team of two students to make robotics more **access
 
 ## 🔧 Built With
 
-- **Unity (C#)** — Game engine for 3D simulation and AR support  
-- **Blender** — Custom modeling and part design  
-- **Vuforia / AR Foundation** — Augmented Reality integration  
-- **Scratch-style logic system** — Custom block-based visual programming  
+- **Unity (C#)** — Game engine for 3D simulation and AR support
+- **Blender** — Custom modeling and part design
+- **Vuforia / AR Foundation** — Augmented Reality integration
+- **Scratch-style logic system** — Custom block-based visual programming
 
 ---
 
 ## 🎓 Ideal For
 
-- Students exploring robotics for the first time  
-- Educators teaching STEM and FLL concepts  
-- Hackathon builders, game developers, and creators who love simulation  
+- Students exploring robotics for the first time
+- Educators teaching STEM and FLL concepts
+- Hackathon builders, game developers, and creators who love simulation
 
 ---
 
@@ -65,38 +68,40 @@ This is a work-in-progress team project. Feedback and contributions are welcome!
 ## 🎮 Download
 
 [⬇️ Download Simulator](https://github.com/iab131/ARISE-FLL-Sim/releases/download/Beta/FLL.Sim.zip)
+
 > No installation needed — just unzip and run!
 
-📘 [Read the User Manual](#-user-manual) 
----
+## 📘 [Read the User Manual](#-user-manual)
 
 ## 📬 Contact
 
 Have ideas, feedback, or want to collaborate?  
 Feel free to reach out to either of us through GitHub:
 
-- [Udula Abeykoon](https://github.com/UdulaAbeykoon)  
+- [Udula Abeykoon](https://github.com/UdulaAbeykoon)
 - [Enhe Bai](https://github.com/iab131)
 
 ---
-
 
 ## 📘 User Manual
 
 ### 🔧 Building Mode
 
 #### 🕹️ Toggle & Control
+
 - `Q` — Switch to **Move Mode**
 - `W` — Switch to **Build Mode**
 - Click a peg/hole to select the first part  
   Then click a second peg/hole/axle to set the target
 
 #### 🔄 Alignment & Rotation
+
 - `F` — Flip the selected part 180°
 - `← / →` — Rotate part by 45° left/right
 - `↑ / ↓` — Push/pull axle in or out
 
 #### ✅ Actions
+
 - `Enter` — Confirm the snap connection
 - `Esc` — Cancel current placement
 - `Ctrl + D` — Duplicate hovered part
@@ -104,6 +109,7 @@ Feel free to reach out to either of us through GitHub:
 - `Shift + F` — Refocus camera on robot
 
 #### ⚙️ Set Motor
+
 - Click **“Set Motor”** button → then click the motor to label it
 
 ---
