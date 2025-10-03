@@ -143,7 +143,8 @@ public class MotorLabel : MonoBehaviour
     }
 
     // ───────── Mouse events with guards ─────────
-    private void OnMouseEnter()
+    // Add these handlers inside MotorLabel
+    public void HandleMouseEnter()
     {
         if (MotorLabelManager.Instance.IsModalOpen ||
             EventSystem.current.IsPointerOverGameObject()) return;
@@ -151,19 +152,25 @@ public class MotorLabel : MonoBehaviour
         if (MotorLabelManager.Instance.assignModeActive) SetHovered(true);
     }
 
-    private void OnMouseExit()
+    public void HandleMouseExit()
     {
         if (MotorLabelManager.Instance.IsModalOpen) return;
         SetHovered(false);
     }
 
-    private void OnMouseUp()
+    public void HandleMouseUp()
     {
         if (MotorLabelManager.Instance.IsModalOpen ||
             EventSystem.current.IsPointerOverGameObject()) return;
 
         MotorLabelManager.Instance.OnMotorClicked(this);
     }
+
+    // Keep Unity’s original OnMouse* but just forward to the handlers
+    private void OnMouseEnter() => HandleMouseEnter();
+    private void OnMouseExit() => HandleMouseExit();
+    private void OnMouseUp() => HandleMouseUp();
+
 
 
 }
