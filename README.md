@@ -2,7 +2,7 @@
 
 ### _Build. Code. Simulate. Explore._
 
-Welcome to **FLL Simulator**, a next-generation robotics experience designed for students, educators, and creators. This interactive simulation tool brings the excitement of **FIRST LEGO League** into an immersive **3D** and **augmented reality** environment, combining creativity, problem-solving, and hands-on learning.
+Welcome to **ARISE**, a next-generation robotics experience designed for students, educators, and creators. This interactive simulation tool brings the excitement of **FIRST LEGO League** into an immersive **3D** and **Augmented Reality** environment, combining creativity, problem-solving, and hands-on learning.
 
 <p align="left">
   <img alt="image" src="https://github.com/user-attachments/assets/d80b62cb-c258-44ef-956a-d222c22b8f7e" width = "500"/>
