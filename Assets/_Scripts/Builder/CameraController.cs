@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class CameraControl : MonoBehaviour
@@ -45,7 +46,7 @@ public class CameraControl : MonoBehaviour
         if (Input.GetMouseButton(2)) // Middle click pan
             Pan();
 
-        if (!EventSystem.current.IsPointerOverGameObject())
+        if (!IsPointerOverInteractiveUI())
             Zoom(Input.GetAxis("Mouse ScrollWheel"));
 
     }
@@ -124,4 +125,24 @@ public class CameraControl : MonoBehaviour
         plane.Raycast(ray, out float dist);
         return ray.GetPoint(dist);
     }
+
+    bool IsPointerOverInteractiveUI()
+    {
+        PointerEventData eventData = new PointerEventData(EventSystem.current)
+        {
+            position = Input.mousePosition
+        };
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+
+        foreach (RaycastResult r in results)
+        {
+            if (r.gameObject.layer == LayerMask.NameToLayer("UI"))
+                return true;
+        }
+
+        return false;
+    }
+
 }
