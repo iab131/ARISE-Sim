@@ -18,6 +18,8 @@ private Vector2 lastTouchPos;
     [SerializeField] private float zoomSpeed = 10f;
     [SerializeField] private float panSpeed = 1f;
 
+
+    [SerializeField] private float touchZoomSpeed = 0.0005f;
     //[Header("Zoom Limits (CAD Style)")]
     //[SerializeField] private float minZoomDistance = 1f;
     //[SerializeField] private float maxZoomDistance = 100f;
@@ -253,7 +255,7 @@ void HandleTwoFingerPanZoom()
 
 void RotateCameraByDelta(Vector2 delta)
 {
-    float speed = rotationSpeed * 0.0015f;
+    float speed = rotationSpeed * touchZoomSpeed;
 
     transform.Rotate(Vector3.up, delta.x * speed, Space.World);
     transform.Rotate(Vector3.right, -delta.y * speed, Space.Self);

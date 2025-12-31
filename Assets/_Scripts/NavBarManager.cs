@@ -18,6 +18,7 @@ public class NavBarController : MonoBehaviour
     [Header("2D UI Panels")]
     [SerializeField] private GameObject blockCodingUIPanel;
     [SerializeField] private GameObject buildingUIPanel;
+    [SerializeField] private GameObject buildingUIPanel1;
     [SerializeField] private GameObject simulationUIPanel;
     [SerializeField] private GameObject arUIPanel;
 
@@ -78,6 +79,7 @@ public class NavBarController : MonoBehaviour
         // 2D UI Panels
         blockCodingUIPanel?.SetActive(targetView == View.BlockCoding);
         buildingUIPanel?.SetActive(targetView == View.Building);
+        buildingUIPanel1?.SetActive(targetView == View.Building);
         simulationUIPanel?.SetActive(targetView == View.Simulation);
         arUIPanel?.SetActive(targetView == View.AR);
 

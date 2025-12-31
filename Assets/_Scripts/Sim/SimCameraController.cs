@@ -7,6 +7,14 @@ using UnityEngine;
 public class SimCameraController : MonoBehaviour
 {
     public Transform target;
+    
+#if UNITY_IOS || UNITY_ANDROID
+[Header("Touch Controls")]
+[SerializeField] private float touchSensitivity = 0.2f;
+
+private bool isTouchRotating = false;
+private Vector2 lastTouchPosition;
+#endif
 
     [Header("Rotation")]
     public float mouseSensitivity = 3f;
@@ -53,23 +61,63 @@ public class SimCameraController : MonoBehaviour
             ToggleMode();
         }
 
-        if (currentMode == CameraMode.Orbit)
-        {
-            // Right mouse drag to rotate
-            if (Input.GetMouseButton(1))
-            {
-                currentYaw += Input.GetAxis("Mouse X") * mouseSensitivity;
-                currentPitch -= Input.GetAxis("Mouse Y") * mouseSensitivity;
-                currentPitch = Mathf.Clamp(currentPitch, minYAngle, maxYAngle);
-            }
+if (currentMode != CameraMode.Orbit)
+        return;
 
-            // Scroll to zoom
-            float scroll = Input.GetAxis("Mouse ScrollWheel");
-            distance -= scroll * zoomSpeed;
-            distance = Mathf.Clamp(distance, minDistance, maxDistance);
-        }
+#if UNITY_IOS || UNITY_ANDROID
+    HandleTouchRotation();
+#else
+    HandleMouseRotation();
+#endif
 
     }
+
+
+private void HandleMouseRotation()
+{
+    // Rotate
+    if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
+    {
+        currentYaw += Input.GetAxis("Mouse X") * mouseSensitivity;
+        currentPitch -= Input.GetAxis("Mouse Y") * mouseSensitivity;
+        currentPitch = Mathf.Clamp(currentPitch, minYAngle, maxYAngle);
+    }
+
+    // Zoom
+    float scroll = Input.GetAxis("Mouse ScrollWheel");
+    distance -= scroll * zoomSpeed;
+    distance = Mathf.Clamp(distance, minDistance, maxDistance);
+}
+
+
+#if UNITY_IOS || UNITY_ANDROID
+private void HandleTouchRotation()
+{
+    if (Input.touchCount != 1)
+    {
+        isTouchRotating = false;
+        return;
+    }
+
+    Touch touch = Input.GetTouch(0);
+
+    if (touch.phase == TouchPhase.Began)
+    {
+        lastTouchPosition = touch.position;
+        isTouchRotating = true;
+    }
+    else if (touch.phase == TouchPhase.Moved && isTouchRotating)
+    {
+        Vector2 delta = touch.position - lastTouchPosition;
+
+        currentYaw += delta.x * touchSensitivity;
+        currentPitch -= delta.y * touchSensitivity;
+        currentPitch = Mathf.Clamp(currentPitch, minYAngle, maxYAngle);
+
+        lastTouchPosition = touch.position;
+    }
+}
+#endif
 
     void LateUpdate()
     {
