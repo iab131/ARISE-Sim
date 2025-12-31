@@ -13,6 +13,7 @@ public class GizmoManager : MonoBehaviour
 
     private GameObject currentHole;
     private readonly List<GameObject> activeHandles = new();
+    private bool firstIsHole;
 
     private void Awake()
     {
@@ -24,49 +25,56 @@ public class GizmoManager : MonoBehaviour
         Instance = this;
     }
 
-    public void ShowHandles(GameObject hole)
+    public void ShowHandles(GameObject hole, bool first, bool isAxle)
     {
         ClearHandles();
         currentHole = hole;
+        firstIsHole = first;
         Vector3 pos = hole.transform.position;
         Vector3 axis = hole.transform.up;
         Vector3 up = hole.transform.up;         // Axis for move
         Vector3 right = hole.transform.right;   // Local right for rotation spacing
         Vector3 forward = hole.transform.forward; // Optional if you want depth-based positioning
         float offset = 0.5f;
+        float offset2 = 1;
+
+        if (isAxle){
+            // Move Up Handle: along up axis, should look outward from hole (aligned with up)
+        activeHandles.Add(Instantiate(
+            moveUpHandlePrefab,
+            pos + forward * offset2 + up * offset2,
+            Quaternion.LookRotation(right,up),
+            hole.transform // Parent to hole
+        ));
+        
+        // Move Down Handle: opposite direction
+        activeHandles.Add(Instantiate(
+            moveDownHandlePrefab,
+            pos + forward * offset2 - up * offset2,
+            Quaternion.LookRotation(right,up),
+            hole.transform // Parent to hole
+        ));
+
+        }
 
 
         // Rotate Left Handle: place to the left, facing around the axis (like a curved ring)
         activeHandles.Add(Instantiate(
             rotateLeftHandlePrefab,
             pos - right * offset,
-            Quaternion.LookRotation(Vector3.Cross(right, forward), rotateLeftHandlePrefab.transform.up) // perpendicular to plane
+            Quaternion.LookRotation(right, up),
+            hole.transform // Parent to hole
         ));
 
         // Rotate Right Handle: place to the right, facing opposite around the ring
         activeHandles.Add(Instantiate(
             rotateRightHandlePrefab,
             pos + right * offset,
-            Quaternion.LookRotation(Vector3.Cross(-right, forward),rotateRightHandlePrefab.transform.up)
+            Quaternion.LookRotation(right, up),
+            hole.transform // Parent to hole
         ));
 
-        // Move Up Handle: along up axis, should look outward from hole (aligned with up)
-        activeHandles.Add(Instantiate(
-            moveUpHandlePrefab,
-            pos + up * offset,
-            Quaternion.LookRotation(up*100f, moveUpHandlePrefab.transform.up)
-        ));
-        activeHandles.Add(Instantiate(
-            moveUpHandlePrefab,
-            pos + up * offset,
-            Quaternion.LookRotation(up * 100f, moveUpHandlePrefab.transform.up)
-        ));
-        // Move Down Handle: opposite direction
-        activeHandles.Add(Instantiate(
-            moveDownHandlePrefab,
-            pos - up * offset,
-            Quaternion.LookRotation(-up)
-        ));
+        
 
     }
 
@@ -79,20 +87,23 @@ public class GizmoManager : MonoBehaviour
 
     public void OnHandleClicked(GizmoHandler.ActionType action)
     { 
-
+        int m = 1;
+        if (firstIsHole){
+            m = -1;
+        }
         switch (action)
         {
             case GizmoHandler.ActionType.RotateLeft:
-                ControlManager.Instance.RotateHoleAroundAxis("up",45f);
+                ControlManager.Instance.RotateHoleAroundAxis("up", -45f * m);
                 break;
             case GizmoHandler.ActionType.RotateRight:
-                ControlManager.Instance.RotateHoleAroundAxis("up", -45f);
+                ControlManager.Instance.RotateHoleAroundAxis("up", 45f * m);
                 break;
             case GizmoHandler.ActionType.MoveUp:
-                ControlManager.Instance.MoveHoleAlongAxis(1);
+                ControlManager.Instance.MoveHoleAlongAxis(1 * m);
                 break;
             case GizmoHandler.ActionType.MoveDown:
-                ControlManager.Instance.MoveHoleAlongAxis(-1);
+                ControlManager.Instance.MoveHoleAlongAxis(-1 * m);
                 break;
         }
 

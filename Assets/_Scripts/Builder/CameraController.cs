@@ -4,6 +4,13 @@ using UnityEngine.EventSystems;
 
 public class CameraControl : MonoBehaviour
 {
+
+
+    #if UNITY_IOS || UNITY_ANDROID || UNITY_EDITOR
+private bool rotatingByTouch;
+private Vector2 lastTouchPos;
+#endif
+
     public GameObject parentModel;
     public static CameraControl Instance { get; private set; }
     [Header("Sensitivity Settings")]
@@ -28,28 +35,36 @@ public class CameraControl : MonoBehaviour
         }
         Instance = this;
     }
+    
     void Update()
-    {
-        if (NavBarController.currentview != NavBarController.View.Building)
-        {
-            return;
-        }
-        if (Input.GetMouseButton(1)) // Right click to orbit
-            CamOrbit();
+{
+    if (NavBarController.currentview != NavBarController.View.Building)
+        return;
 
-        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.F))
-            FitToScreen();
+#if UNITY_IOS || UNITY_ANDROID || UNITY_EDITOR
+    HandleTouchCamera();
+#if !UNITY_EDITOR
+    return; // ❗ prevents mouse input on phone
+#endif
+#endif
 
-        if (Input.GetMouseButtonDown(2)) // Middle click pan start
-            mouseWorldPosStart = GetPerspectivePos();
+    // ===== DESKTOP CONTROLS (UNCHANGED) =====
+    if (Input.GetMouseButton(1))
+        CamOrbit();
 
-        if (Input.GetMouseButton(2)) // Middle click pan
-            Pan();
+    if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.F))
+        FitToScreen();
 
-        if (!IsPointerOverInteractiveUI())
-            Zoom(Input.GetAxis("Mouse ScrollWheel"));
+    if (Input.GetMouseButtonDown(2))
+        mouseWorldPosStart = GetPerspectivePos();
 
-    }
+    if (Input.GetMouseButton(2))
+        Pan();
+
+    if (!IsPointerOverInteractiveUI())
+        Zoom(Input.GetAxis("Mouse ScrollWheel"));
+}
+
 
     private void CamOrbit()
     {
@@ -144,5 +159,110 @@ public class CameraControl : MonoBehaviour
 
         return false;
     }
+
+
+
+  
+void HandleTouchCamera()
+{
+#if UNITY_EDITOR
+    // simulate 1-finger touch with mouse
+    if (Input.GetMouseButtonDown(0))
+    {
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+
+        if (!IsPartBeingDragged())
+        {
+            rotatingByTouch = true;
+            lastTouchPos = Input.mousePosition;
+        }
+    }
+    else if (Input.GetMouseButton(0) && rotatingByTouch)
+    {
+        Vector2 delta =
+            (Vector2)Input.mousePosition - lastTouchPos;
+        lastTouchPos = Input.mousePosition;
+
+        RotateCameraByDelta(delta);
+    }
+    else if (Input.GetMouseButtonUp(0))
+    {
+        rotatingByTouch = false;
+    }
+#else
+    if (Input.touchCount == 1)
+    {
+        Touch t = Input.GetTouch(0);
+
+        if (EventSystem.current.IsPointerOverGameObject(t.fingerId))
+            return;
+
+        if (IsPartBeingDragged())
+            return;
+
+        if (t.phase == TouchPhase.Began)
+        {
+            rotatingByTouch = true;
+            lastTouchPos = t.position;
+        }
+        else if (t.phase == TouchPhase.Moved && rotatingByTouch)
+        {
+            RotateCameraByDelta(t.deltaPosition);
+        }
+        else if (t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled)
+        {
+            rotatingByTouch = false;
+        }
+    }
+    else
+    {
+        HandleTwoFingerPanZoom();
+    }
+#endif
+}
+
+
+
+
+void HandleTwoFingerPanZoom()
+{
+    Touch t0 = Input.GetTouch(0);
+    Touch t1 = Input.GetTouch(1);
+
+    // ---- PAN ----
+    Vector2 avgDelta = (t0.deltaPosition + t1.deltaPosition) * 0.5f;
+    Vector3 pan =
+        (-Camera.main.transform.right * avgDelta.x +
+         -Camera.main.transform.up * avgDelta.y) * panSpeed * 0.01f;
+
+    Camera.main.transform.position += pan;
+
+    // ---- ZOOM ----
+    Vector2 prev0 = t0.position - t0.deltaPosition;
+    Vector2 prev1 = t1.position - t1.deltaPosition;
+
+    float prevDist = Vector2.Distance(prev0, prev1);
+    float currDist = Vector2.Distance(t0.position, t1.position);
+
+    float diff = currDist - prevDist;
+    Zoom(diff * 0.01f);
+}
+
+
+
+void RotateCameraByDelta(Vector2 delta)
+{
+    float speed = rotationSpeed * 0.0015f;
+
+    transform.Rotate(Vector3.up, delta.x * speed, Space.World);
+    transform.Rotate(Vector3.right, -delta.y * speed, Space.Self);
+}
+
+bool IsPartBeingDragged()
+{
+     return ControlManager.Instance != null &&
+           ControlManager.Instance.IsDraggingPart;
+}
 
 }

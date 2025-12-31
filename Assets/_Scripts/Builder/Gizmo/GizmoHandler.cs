@@ -18,9 +18,14 @@ public class GizmoHandler : MonoBehaviour
         {
             // Cache the material that's already assigned in the prefab
             defaultMaterial = rend.material;
+
+#if UNITY_ANDROID || UNITY_IOS
+            rend.material = highlightMaterial;
+#endif
         }
     }
 
+#if !UNITY_ANDROID && !UNITY_IOS
     private void OnMouseEnter()
     {
         if (rend != null && highlightMaterial != null)
@@ -36,6 +41,7 @@ public class GizmoHandler : MonoBehaviour
             rend.material = defaultMaterial;
         }
     }
+#endif
 
     private void OnMouseDown()
     {

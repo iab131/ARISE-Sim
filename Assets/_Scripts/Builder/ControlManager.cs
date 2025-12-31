@@ -27,6 +27,18 @@ public class ControlManager : MonoBehaviour
     private enum Axis { None, X, Y, Z }
     private Axis lockedAxis = Axis.None;
 
+    #if UNITY_IOS || UNITY_ANDROID
+private enum TouchIntent
+{
+    None,
+    DragItem,
+    RotateCamera
+}
+
+private TouchIntent touchIntent = TouchIntent.None;
+#endif
+
+
     /* =============================================================
      *  CONSTANTS / LAYERS
      * =============================================================*/
@@ -51,6 +63,7 @@ public class ControlManager : MonoBehaviour
     private Vector3 previewOrigPos;
     private Quaternion previewOrigRot;
     private Quaternion previewHoleRot;
+    private Vector3 previewHolePos;
 
     /* =============================================================
      *  GIZMO
@@ -81,6 +94,7 @@ public class ControlManager : MonoBehaviour
     [SerializeField] private Button moveModeButton;
     [SerializeField] private Button holesModeButton;
     public GameObject unitSizeReference; // Assign in Inspector
+    public bool IsDraggingPart => draggedPart != null;
 
 
     /* ─────────────────────────────────────────────────────────── */
@@ -106,9 +120,16 @@ public class ControlManager : MonoBehaviour
         unitRenderer = unitSizeReference.GetComponent<Renderer>();
         unitDistance = unitRenderer.bounds.size.x / 2; // Use X, Y, or Z as needed
     }
+    
     void Update()
     {
         if (IsInputFieldFocused() || MotorLabelManager.Instance.IsModalOpen) return;
+
+#if UNITY_IOS || UNITY_ANDROID
+        HandleTouchControls();
+        if (currentMode == Mode.Holes) HandleHoleFSM();
+        return;
+#endif
         HandleModeHotkeys();
         HandleDuplication();
         HandleDeletion();
@@ -124,6 +145,55 @@ public class ControlManager : MonoBehaviour
             HandleHoleFSM();
         }
     }
+
+
+
+    #if UNITY_IOS || UNITY_ANDROID
+void HandleTouchControls()
+{
+    if (Input.touchCount != 1) return;
+
+    Touch t = Input.GetTouch(0);
+
+    // Ignore UI
+    if (EventSystem.current.IsPointerOverGameObject(t.fingerId))
+        return;
+
+    int mask = 1 << partsLayer;
+
+    if (t.phase == TouchPhase.Began)
+    {
+        Ray ray = Camera.main.ScreenPointToRay(t.position);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, mask))
+        {
+            // Start dragging (same logic as mouse)
+            draggedPart = GetGroupRoot(hit.transform).gameObject;
+
+            Vector3 hitPoint = hit.point;
+            grabLocal = draggedPart.transform.InverseTransformPoint(hitPoint);
+            dragPlane = new Plane(Camera.main.transform.forward, hitPoint);
+        }
+    }
+    else if (t.phase == TouchPhase.Moved && draggedPart != null)
+    {
+        Ray ray = Camera.main.ScreenPointToRay(t.position);
+        dragPlane.Raycast(ray, out float enter);
+
+        Vector3 planePoint = ray.GetPoint(enter);
+        Vector3 grabWorldOffset =
+            draggedPart.transform.TransformVector(grabLocal);
+
+        Vector3 target = planePoint - grabWorldOffset;
+        draggedPart.transform.position = target;
+    }
+    else if (t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled)
+    {
+        draggedPart = null;
+    }
+}
+#endif
+
 
     /* =============================================================
   *  Buttons
@@ -383,11 +453,11 @@ public class ControlManager : MonoBehaviour
                         secondHoleGO = hit;
                         bool firstIsPeg = IsPeg(firstHoleGO.tag);
                         bool firstIsHole = IsHole(firstHoleGO.tag);
-                        hole = firstIsHole ? firstHoleGO.transform : secondHoleGO.transform;
-
+                        bool isAxle = false;
                         // check if axle
                         if (firstHoleGO.CompareTag("Axle") || secondHoleGO.CompareTag("Axle"))
                         {
+                            isAxle = true;
                             firstHoleGO = GetAxlePos(firstHoleGO.transform).gameObject;
                             secondHoleGO = GetAxlePos(secondHoleGO.transform).gameObject;
                         }
@@ -397,7 +467,7 @@ public class ControlManager : MonoBehaviour
                             firstHoleGO = hit;
                         }
 
-                        
+                        hole = firstIsHole ? firstHoleGO.transform : secondHoleGO.transform;
                         PreviewSnap(firstHoleGO, secondHoleGO);
 
                         if (hoverHoleRenderer != null && hoverHoleRenderer != firstHoleRenderer)
@@ -405,7 +475,7 @@ public class ControlManager : MonoBehaviour
                         hoverHoleRenderer = null;
 
                         //gizmo
-                        //GizmoManager.Instance.ShowHandles(hole.gameObject);
+                        GizmoManager.Instance.ShowHandles(hole.gameObject, firstIsHole, isAxle);
 
                         holeState = HoleState.PreviewAdjust;
                     }
@@ -421,7 +491,7 @@ public class ControlManager : MonoBehaviour
                 HandlePreviewRotationKeys();
 
                 if (IsCancelPressed()) { CancelPreview(true); ClearAllHoleState(); 
-                    //GizmoManager.Instance.ClearHandles(); 
+                    GizmoManager.Instance.ClearHandles(); 
                     break; }
                 if (IsConfirmPressed()) { CommitSnap(); break; }
                 break;
@@ -434,6 +504,7 @@ public class ControlManager : MonoBehaviour
     bool IsSelectPressed() => Input.GetMouseButtonDown(0);
     bool IsConfirmPressed() => Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter);
     bool IsCancelPressed() => Input.GetKeyDown(KeyCode.Escape);
+    
 
     /* =============================================================
      *  SELECTION HELPERS
@@ -458,6 +529,7 @@ public class ControlManager : MonoBehaviour
             previewOrigPos = GetGroupRoot(movingPartRoot).position;
             previewOrigRot = GetGroupRoot(movingPartRoot).rotation;
             previewHoleRot = hole.localRotation;
+            previewHolePos = hole.localPosition;
         }
 
         // move part so holeA meets holeB (no parent change)
@@ -479,6 +551,7 @@ public class ControlManager : MonoBehaviour
             {
                 MergeGroup(moverRoot, targetRoot);
                 ClearAllHoleState();
+                GizmoManager.Instance.ClearHandles();
             });
     }
 
@@ -522,14 +595,14 @@ public class ControlManager : MonoBehaviour
         }
 
         /* ---- F = end-over-end flip of the PEG / AXLE piece ---- */
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            if (hole != null)
-            {
-                RotateHoleAroundAxis("right", 180f, true);
+        // if (Input.GetKeyDown(KeyCode.F))
+        // {
+        //     if (hole != null)
+        //     {
+        //         RotateHoleAroundAxis("right", 180f, true);
                 
-            }
-        }
+        //     }
+        // }
     }
 
     public void MoveHoleAlongAxis(int direction)
@@ -559,7 +632,7 @@ public class ControlManager : MonoBehaviour
                 pivot = pegHole.position;
                 axis = hole.right;
                 pegHole.RotateAround(pivot,axis,angle);
-                Debug.Log(pegHole.name);
+               
                 break;
             case "up":
                 axis = hole.up;
@@ -567,7 +640,7 @@ public class ControlManager : MonoBehaviour
 
                 break;
         }
-
+        print(hole.transform.rotation.eulerAngles);
         SnapPartToHole(GetGroupRoot(movingPartRoot),
                                firstHoleGO.transform,
                                secondHoleGO.transform,
@@ -579,6 +652,7 @@ public class ControlManager : MonoBehaviour
      * =============================================================*/
     void ClearAllHoleState()
     {
+        GizmoManager.Instance.ClearHandles();
         if (hoverHoleRenderer != null && hoverHoleRenderer != firstHoleRenderer)
             hoverHoleRenderer.enabled = false;
         if (firstHoleRenderer != null) firstHoleRenderer.enabled = false;
@@ -598,6 +672,7 @@ public class ControlManager : MonoBehaviour
             GetGroupRoot(movingPartRoot).position = previewOrigPos;
             GetGroupRoot(movingPartRoot).rotation = previewOrigRot;
             hole.localRotation = previewHoleRot;
+            hole.localPosition = previewHolePos;
             if (clearStored) movingPartRoot = null;
         }
     }
