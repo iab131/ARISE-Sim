@@ -27,6 +27,15 @@ public class NavBarController : MonoBehaviour
     [SerializeField] private GameObject arRoot;
     [SerializeField] private Transform codeRoot;
 
+    [Header("Nav Buttons")]
+    [SerializeField] private UnityEngine.UI.Button blockCodingButton;
+    [SerializeField] private UnityEngine.UI.Button buildingButton;
+    [SerializeField] private UnityEngine.UI.Button simulationButton;
+    [SerializeField] private UnityEngine.UI.Button arButton;
+
+    [SerializeField] private Color normalColor = Color.white;
+    [SerializeField] private Color selectedColor = new Color(0.2f, 0.6f, 1f);
+
     [SerializeField] private BlockCodeExecutor blockCodeExecutor;
 
     private void Start()
@@ -42,6 +51,7 @@ public class NavBarController : MonoBehaviour
     private void SwitchToView(View targetView)
     {
         currentview = targetView;
+        UpdateNavButtonVisuals(targetView);
         //copy code
         if (View.AR == targetView || View.Simulation == targetView)
         {
@@ -80,6 +90,26 @@ public class NavBarController : MonoBehaviour
         MotorLabelManager.Instance.SetAssignMode(false);
 
         SimRobotManager.SpawnSimulationRobot(targetView, buildingRoot, simulationRoot, arRoot);
+        
 
     }
+
+    private void UpdateNavButtonVisuals(View activeView)
+    {
+        SetButtonColor(blockCodingButton, activeView == View.BlockCoding);
+        SetButtonColor(buildingButton, activeView == View.Building);
+        SetButtonColor(simulationButton, activeView == View.Simulation);
+        SetButtonColor(arButton, activeView == View.AR);
+    }
+            
+    private void SetButtonColor(UnityEngine.UI.Button button, bool selected)
+    {
+        if (button == null) return;
+
+        var colors = button.colors;
+        colors.normalColor = selected ? selectedColor : normalColor;
+        colors.selectedColor = selectedColor;
+        button.colors = colors;
+    }
+
 }
