@@ -476,7 +476,7 @@ void HandleTouchControls()
 
                         //gizmo
                         GizmoManager.Instance.ShowHandles(hole.gameObject, firstIsHole, isAxle);
-
+                        ConnectionActionUIManager.Instance?.SetVisible(true);
                         holeState = HoleState.PreviewAdjust;
                     }
                     else
@@ -491,9 +491,14 @@ void HandleTouchControls()
                 HandlePreviewRotationKeys();
 
                 if (IsCancelPressed()) { CancelPreview(true); ClearAllHoleState(); 
-                    GizmoManager.Instance.ClearHandles(); 
+                    GizmoManager.Instance.ClearHandles();
+                    ConnectionActionUIManager.Instance?.SetVisible(false);
                     break; }
-                if (IsConfirmPressed()) { CommitSnap(); break; }
+                if (IsConfirmPressed()) { CommitSnap();
+                    ConnectionActionUIManager.Instance?.SetVisible(false); 
+                    GizmoManager.Instance.ClearHandles();
+                    break; }
+
                 break;
         }
     }
@@ -502,9 +507,19 @@ void HandleTouchControls()
      *  INPUT UTILS
      * =============================================================*/
     bool IsSelectPressed() => Input.GetMouseButtonDown(0);
-    bool IsConfirmPressed() => Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter);
-    bool IsCancelPressed() => Input.GetKeyDown(KeyCode.Escape);
-    
+    bool IsConfirmPressed()
+    {
+        return Input.GetKeyDown(KeyCode.Return)
+            || Input.GetKeyDown(KeyCode.KeypadEnter)
+            || ConnectionActionUIManager.Instance?.ConsumeConfirm() == true;
+    }
+
+    bool IsCancelPressed()
+    {
+        return Input.GetKeyDown(KeyCode.Escape)
+            || ConnectionActionUIManager.Instance?.ConsumeCancel() == true;
+    }
+
 
     /* =============================================================
      *  SELECTION HELPERS
@@ -551,7 +566,6 @@ void HandleTouchControls()
             {
                 MergeGroup(moverRoot, targetRoot);
                 ClearAllHoleState();
-                GizmoManager.Instance.ClearHandles();
             });
     }
 
