@@ -13,7 +13,7 @@ public class TutorialStep : ScriptableObject
 
     [Header("Target / Highlight")]
     public Transform worldTarget;                 // Optional 3D object to highlight
-    public RectTransform uiTarget;                // Optional UI widget to highlight
+    public string uiTargetName;
     public bool blockOtherClicks = true;          // Block all input except target?
 
     [Header("Completion")]

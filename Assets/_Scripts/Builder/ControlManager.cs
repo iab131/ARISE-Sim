@@ -126,8 +126,12 @@ private TouchIntent touchIntent = TouchIntent.None;
         if (IsInputFieldFocused() || MotorLabelManager.Instance.IsModalOpen) return;
 
 #if UNITY_IOS || UNITY_ANDROID
-        HandleTouchControls();
-        if (currentMode == Mode.Holes) HandleHoleFSM();
+        if (currentMode == Mode.Move){
+            HandleTouchControls();
+        }
+        else {
+            HandleHoleFSM();
+        }
         return;
 #endif
         HandleModeHotkeys();
@@ -148,7 +152,7 @@ private TouchIntent touchIntent = TouchIntent.None;
 
 
 
-    #if UNITY_IOS || UNITY_ANDROID
+#if UNITY_IOS || UNITY_ANDROID
 void HandleTouchControls()
 {
     if (Input.touchCount != 1) return;
@@ -186,6 +190,20 @@ void HandleTouchControls()
 
         Vector3 target = planePoint - grabWorldOffset;
         draggedPart.transform.position = target;
+
+        if (IsPointerOverInteractiveUI())
+        {
+            if (GetGroupRoot(draggedPart.transform).childCount > 1)
+            {
+                if (!draggedPart.name.Contains("ControlHub"))
+                Destroy(draggedPart);
+            }
+            else
+            {
+                if (!HasControlHub(draggedPart.transform))
+                Destroy(GetGroupRoot(draggedPart.transform).gameObject);
+            }   
+        }
     }
     else if (t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled)
     {
@@ -282,7 +300,24 @@ void HandleTouchControls()
             }
         }
     }
+    bool IsPointerOverInteractiveUI()
+    {
+        PointerEventData eventData = new PointerEventData(EventSystem.current)
+        {
+            position = Input.mousePosition
+        };
 
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+
+        foreach (RaycastResult r in results)
+        {
+            if (r.gameObject.layer == LayerMask.NameToLayer("UI"))
+                return true;
+        }
+
+        return false;
+    }
     void HandleDuplication()
     {
         if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) &&

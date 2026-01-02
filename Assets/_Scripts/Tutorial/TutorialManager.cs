@@ -17,6 +17,7 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private List<TutorialStep> steps = new();
 
     [Header("UI")]
+    [SerializeField] private Canvas canvas;
     [SerializeField] private CanvasGroup dimBG;
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private TextMeshProUGUI bodyText;
@@ -29,6 +30,9 @@ public class TutorialManager : MonoBehaviour
 
     [Header("Input (optional)")]
     [SerializeField] private PlayerInput playerInput;      // New Input System PlayerInput
+
+
+    private Dictionary<string, RectTransform> uiTargets = new();
 
     private int index;
     private Camera cam;
@@ -47,13 +51,16 @@ public class TutorialManager : MonoBehaviour
     private void Start()
     {
         // Resume from previous progress (optional)
-        index = PlayerPrefs.GetInt(SAVE_KEY, 0);
-        StartTutorial(index);
+        //index = PlayerPrefs.GetInt(SAVE_KEY, 0);
+        //StartTutorial(index);
+        StartTutorial(0);
     }
 
     /// <summary>Start or restart the tutorial from a given step index.</summary>
     public void StartTutorial(int startIndex = 0)
     {
+        canvas.gameObject.SetActive(true);
+        card.gameObject.SetActive(true);
         running = true;
         index = Mathf.Clamp(startIndex, 0, steps.Count - 1);
         ShowStep(index);
@@ -67,11 +74,14 @@ public class TutorialManager : MonoBehaviour
         titleText.text = s.title;
         bodyText.text = s.body;
 
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(card);
         // Input gating
         SetPlayerInputs(s);
 
-        // Blocker
-        raycastBlocker.raycastTarget = s.blockOtherClicks;
+        // Blocker  
+        if (!string.IsNullOrEmpty(s.uiTargetName)) raycastBlocker.raycastTarget = false;
+        else raycastBlocker.raycastTarget = s.blockOtherClicks;
 
         // Buttons availability
         nextBtn.gameObject.SetActive(s.completionMode == TutorialStep.CompletionMode.ManualNext);
@@ -92,12 +102,16 @@ public class TutorialManager : MonoBehaviour
     {
         highlightFrame.gameObject.SetActive(false);
 
-        if (s.uiTarget)
+        if (!string.IsNullOrEmpty(s.uiTargetName))
         {
-            highlightFrame.gameObject.SetActive(true);
-            highlightFrame.position = s.uiTarget.TransformPoint(s.uiTarget.rect.center);
-            highlightFrame.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, s.uiTarget.rect.width + 12);
-            highlightFrame.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, s.uiTarget.rect.height + 12);
+            var rt = ResolveUITarget(s);
+            if (rt)
+            {
+                highlightFrame.gameObject.SetActive(true);
+                highlightFrame.position = rt.TransformPoint(rt.rect.center);
+                highlightFrame.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, rt.rect.width + 30);
+                highlightFrame.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, rt.rect.height + 30);
+            }
         }
         else if (s.worldTarget)
         {
@@ -106,6 +120,7 @@ public class TutorialManager : MonoBehaviour
             highlightFrame.position = screen;
             // Optional: size by renderer bounds → convert bounds to screen size
         }
+        
     }
 
     private IEnumerator WaitForCompletion(TutorialStep s)
@@ -142,19 +157,43 @@ public class TutorialManager : MonoBehaviour
 
         OnNextClicked();
     }
+    private RectTransform ResolveUITarget(TutorialStep s)
+    {
+        if (string.IsNullOrEmpty(s.uiTargetName))
+            return null;
+
+        if (uiTargets.TryGetValue(s.uiTargetName, out var cached))
+            return cached;
+
+        var go = GameObject.Find(s.uiTargetName);
+        if (!go) return null;
+
+        var rt = go.GetComponent<RectTransform>();
+        if (!rt) return null;
+
+        uiTargets[s.uiTargetName] = rt;
+        return rt;
+    }
 
     private IEnumerator WaitForClickOnSpecificTarget(TutorialStep s)
     {
         // Allow clicking either worldTarget or uiTarget
         while (true)
         {
-            if (Input.GetMouseButtonDown(0))
+#if UNITY_ANDROID || UNITY_IOS
+if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+#else
+                if (Input.GetMouseButtonDown(0))
+#endif
             {
                 if (EventSystem.current.IsPointerOverGameObject())
                 {
                     // UI hit
-                    if (s.uiTarget && RectTransformUtility.RectangleContainsScreenPoint(s.uiTarget, Input.mousePosition))
+                    RectTransform taget = ResolveUITarget(s);
+                    if (taget && RectTransformUtility.RectangleContainsScreenPoint(taget, Input.mousePosition))
+                    {
                         yield break;
+                    }
                 }
                 else
                 {
@@ -240,9 +279,27 @@ public class TutorialManager : MonoBehaviour
         PlayerPrefs.SetInt(SAVE_KEY, steps.Count);
         // Hide UI and restore inputs
         dimBG.alpha = 0; dimBG.blocksRaycasts = false;
+        dimBG.gameObject.SetActive(false);
         highlightFrame.gameObject.SetActive(false);
+        card.gameObject.SetActive(false);
         raycastBlocker.raycastTarget = false;
         if (playerInput) playerInput.actions.Enable();
+        canvas.gameObject.SetActive(false);
         gameObject.SetActive(false); // or keep and just hide
     }
+
+    public void NotifyUIButtonClicked(string id)
+    {
+        if (!running) return;
+
+        var step = steps[index];
+        if (step.completionMode != TutorialStep.CompletionMode.ClickTarget)
+            return;
+
+        if (step.uiTargetName == id)
+        {
+            OnNextClicked();
+        }
+    }
+
 }

@@ -153,26 +153,26 @@ public static class PartThumbnailBuilder
         preview.lights[1].intensity = 1.2f;
 
         preview.BeginPreview(new Rect(0, 0, SIZE, SIZE), GUIStyle.none);
-preview.camera.Render();
+        preview.camera.Render();
 
-Texture rendered = preview.EndPreview();
+        Texture rendered = preview.EndPreview();
 
-// Copy Texture → Texture2D
-RenderTexture rt = RenderTexture.GetTemporary(SIZE, SIZE, 24);
-Graphics.Blit(rendered, rt);
+        // Copy Texture → Texture2D
+        RenderTexture rt = RenderTexture.GetTemporary(SIZE, SIZE, 24);
+        Graphics.Blit(rendered, rt);
 
-RenderTexture previous = RenderTexture.active;
-RenderTexture.active = rt;
+        RenderTexture previous = RenderTexture.active;
+        RenderTexture.active = rt;
 
-Texture2D tex = new Texture2D(SIZE, SIZE, TextureFormat.RGBA32, false);
-tex.ReadPixels(new Rect(0, 0, SIZE, SIZE), 0, 0);
-tex.Apply();
+        Texture2D tex = new Texture2D(SIZE, SIZE, TextureFormat.RGBA32, false);
+        tex.ReadPixels(new Rect(0, 0, SIZE, SIZE), 0, 0);
+        tex.Apply();
 
-RenderTexture.active = previous;
-RenderTexture.ReleaseTemporary(rt);
+        RenderTexture.active = previous;
+        RenderTexture.ReleaseTemporary(rt);
 
-preview.Cleanup();
-return tex;
+        preview.Cleanup();
+        return tex;
 
     }
 
