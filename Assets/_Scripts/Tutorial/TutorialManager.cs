@@ -33,15 +33,21 @@ public class TutorialManager : MonoBehaviour
 
 
     private Dictionary<string, RectTransform> uiTargets = new();
+    private Dictionary<string, Transform> worldTargets = new();
+
+    private Transform _trackedWorldTarget;
+    private bool _trackWorldTarget;
 
     private int index;
     private Camera cam;
     private bool running;
 
     private const string SAVE_KEY = "tutorial.step.index";
+    public static TutorialManager Instance { get; private set; }
 
     private void Awake()
     {
+        Instance = this;
         cam = Camera.main;
         nextBtn.onClick.AddListener(OnNextClicked);
         backBtn.onClick.AddListener(OnBackClicked);
@@ -51,11 +57,18 @@ public class TutorialManager : MonoBehaviour
     private void Start()
     {
         // Resume from previous progress (optional)
-        //index = PlayerPrefs.GetInt(SAVE_KEY, 0);
-        //StartTutorial(index);
-        StartTutorial(0);
+        index = PlayerPrefs.GetInt(SAVE_KEY, 0);
+        StartTutorial(index);
+        //StartTutorial(12);
     }
 
+    private void Update()
+    {
+        if (!_trackWorldTarget)
+            return;
+
+        UpdateWorldHighlightPosition();
+    }
     /// <summary>Start or restart the tutorial from a given step index.</summary>
     public void StartTutorial(int startIndex = 0)
     {
@@ -101,10 +114,13 @@ public class TutorialManager : MonoBehaviour
     private void PositionHighlight(TutorialStep s)
     {
         highlightFrame.gameObject.SetActive(false);
+        _trackWorldTarget = false;
+        _trackedWorldTarget = null;
 
+        // --- UI target highlight (static) ---
         if (!string.IsNullOrEmpty(s.uiTargetName))
         {
-            var rt = ResolveUITarget(s);
+            RectTransform rt = ResolveUITarget(s);
             if (rt)
             {
                 highlightFrame.gameObject.SetActive(true);
@@ -113,14 +129,94 @@ public class TutorialManager : MonoBehaviour
                 highlightFrame.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, rt.rect.height + 30);
             }
         }
-        else if (s.worldTarget)
+        // --- World target highlight (dynamic) ---
+        else if (!string.IsNullOrEmpty(s.worldTarget))
         {
-            Vector3 screen = cam.WorldToScreenPoint(s.worldTarget.position);
-            highlightFrame.gameObject.SetActive(true);
-            highlightFrame.position = screen;
-            // Optional: size by renderer bounds → convert bounds to screen size
+            Transform wt = ResolveWorldTarget(s);
+            if (wt)
+            {
+                highlightFrame.gameObject.SetActive(true);
+                _trackedWorldTarget = wt;
+                _trackWorldTarget = true;
+
+                UpdateWorldHighlightPosition(); // position once immediately
+            }
         }
-        
+    }
+    private void UpdateWorldHighlightPosition()
+    {
+        if (!_trackedWorldTarget || !cam)
+            return;
+
+        if (!TryGetWorldBounds(_trackedWorldTarget, out Bounds bounds))
+            return;
+
+        if (!TryGetScreenRectFromBounds(bounds, out Vector3 center, out Vector2 size))
+        {
+            highlightFrame.gameObject.SetActive(false);
+            return;
+        }
+
+        highlightFrame.gameObject.SetActive(true);
+        highlightFrame.position = center;
+
+        // Add padding so it doesn't feel tight
+        highlightFrame.SetSizeWithCurrentAnchors(
+            RectTransform.Axis.Horizontal, size.x + 30f);
+        highlightFrame.SetSizeWithCurrentAnchors(
+            RectTransform.Axis.Vertical, size.y + 30f);
+    }
+
+    private bool TryGetScreenRectFromBounds(Bounds bounds, out Vector3 center, out Vector2 size)
+    {
+        Vector3[] corners = new Vector3[8];
+
+        Vector3 ext = bounds.extents;
+        Vector3 c = bounds.center;
+
+        corners[0] = c + new Vector3(-ext.x, -ext.y, -ext.z);
+        corners[1] = c + new Vector3(-ext.x, -ext.y, ext.z);
+        corners[2] = c + new Vector3(-ext.x, ext.y, -ext.z);
+        corners[3] = c + new Vector3(-ext.x, ext.y, ext.z);
+        corners[4] = c + new Vector3(ext.x, -ext.y, -ext.z);
+        corners[5] = c + new Vector3(ext.x, -ext.y, ext.z);
+        corners[6] = c + new Vector3(ext.x, ext.y, -ext.z);
+        corners[7] = c + new Vector3(ext.x, ext.y, ext.z);
+
+        Vector2 min = new Vector2(float.MaxValue, float.MaxValue);
+        Vector2 max = new Vector2(float.MinValue, float.MinValue);
+
+        foreach (var corner in corners)
+        {
+            Vector3 screen = cam.WorldToScreenPoint(corner);
+            if (screen.z < 0)
+                continue;
+
+            min = Vector2.Min(min, screen);
+            max = Vector2.Max(max, screen);
+        }
+
+        center = (min + max) * 0.5f;
+        size = max - min;
+
+        return size.x > 0 && size.y > 0;
+    }
+
+    private bool TryGetWorldBounds(Transform target, out Bounds bounds)
+    {
+        bounds = new Bounds();
+
+        Renderer[] renderers = target.GetComponentsInChildren<Renderer>();
+        if (renderers.Length == 0)
+            return false;
+
+        bounds = renderers[0].bounds;
+        for (int i = 1; i < renderers.Length; i++)
+        {
+            bounds.Encapsulate(renderers[i].bounds);
+        }
+
+        return true;
     }
 
     private IEnumerator WaitForCompletion(TutorialStep s)
@@ -129,6 +225,7 @@ public class TutorialManager : MonoBehaviour
         {
             case TutorialStep.CompletionMode.ClickTarget:
                 yield return WaitForClickOnSpecificTarget(s);
+                yield return new WaitForSeconds(0.1f + s.waitSeconds);
                 break;
 
             case TutorialStep.CompletionMode.ClickByTag:
@@ -174,19 +271,36 @@ public class TutorialManager : MonoBehaviour
         uiTargets[s.uiTargetName] = rt;
         return rt;
     }
+    private Transform ResolveWorldTarget(TutorialStep s)
+    {
+        if (string.IsNullOrEmpty(s.worldTarget))
+            return null;
 
+        if (uiTargets.TryGetValue(s.worldTarget, out var cached))
+            return cached;
+
+        var go = GameObject.Find(s.worldTarget);
+        if (!go) return null;
+
+        var rt = go.GetComponent<Transform>();
+        if (!rt) return null;
+
+        worldTargets[s.worldTarget] = rt;
+        return rt;
+    }
     private IEnumerator WaitForClickOnSpecificTarget(TutorialStep s)
     {
         // Allow clicking either worldTarget or uiTarget
         while (true)
         {
+
 #if UNITY_ANDROID || UNITY_IOS
 if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
 #else
                 if (Input.GetMouseButtonDown(0))
 #endif
             {
-                if (EventSystem.current.IsPointerOverGameObject())
+                if (IsPointerOverUI())
                 {
                     // UI hit
                     RectTransform taget = ResolveUITarget(s);
@@ -199,15 +313,28 @@ if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
                 {
                     // 3D hit
                     Ray r = cam.ScreenPointToRay(Input.mousePosition);
-                    if (Physics.Raycast(r, out var hit, 500f))
+                    if (Physics.Raycast(r, out var hit, Mathf.Infinity))
                     {
-                        if (s.worldTarget && hit.transform == s.worldTarget)
+                        Transform taget = ResolveWorldTarget(s);
+                     
+                        if (taget && hit.transform == ResolveWorldTarget(s))
                             yield break;
                     }
                 }
             }
             yield return null;
         }
+    }
+    bool IsPointerOverUI()
+    {
+#if UNITY_ANDROID || UNITY_IOS
+    if (Input.touchCount > 0)
+        return EventSystem.current.IsPointerOverGameObject(
+            Input.GetTouch(0).fingerId);
+    return false;
+#else
+        return EventSystem.current.IsPointerOverGameObject();
+#endif
     }
 
     private IEnumerator WaitForClickByTag(string tagName)

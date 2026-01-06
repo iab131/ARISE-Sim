@@ -471,6 +471,7 @@ void HandleTouchControls()
                     {
                         SetFirstHole(hit);
                         holeState = HoleState.SelectingSecond;
+                        TutorialManager.Instance?.SignalStepDone();
                     }
                 }
                 break;
@@ -513,6 +514,8 @@ void HandleTouchControls()
                         GizmoManager.Instance.ShowHandles(hole.gameObject, firstIsHole, isAxle);
                         ConnectionActionUIManager.Instance?.SetVisible(true);
                         holeState = HoleState.PreviewAdjust;
+
+                        TutorialManager.Instance?.SignalStepDone();
                     }
                     else
                     {
@@ -528,10 +531,12 @@ void HandleTouchControls()
                 if (IsCancelPressed()) { CancelPreview(true); ClearAllHoleState(); 
                     GizmoManager.Instance.ClearHandles();
                     ConnectionActionUIManager.Instance?.SetVisible(false);
+                    TutorialManager.Instance?.SignalStepDone();
                     break; }
                 if (IsConfirmPressed()) { CommitSnap();
                     ConnectionActionUIManager.Instance?.SetVisible(false); 
                     GizmoManager.Instance.ClearHandles();
+                    TutorialManager.Instance?.SignalStepDone();
                     break; }
 
                 break;

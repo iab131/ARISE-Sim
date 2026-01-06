@@ -10,17 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1dd67a097bf1d424d920d5335e86efb5, type: 3}
-  m_Name: Step_01_OpenMenu
+  m_Name: Step8 note
   m_EditorClassIdentifier: 
-  title: Test
-  body: Paragraph
-  worldTarget: {fileID: 0}
-  uiTarget: {fileID: 0}
-  uiTargetName: Part List
+  title: 
+  body: Make sure to add motors to your build aswell!
+  worldTarget: 
+  uiTargetName: 
   blockOtherClicks: 1
   completionMode: 5
   requiredTag: 
   requiredKey: 0
-  waitSeconds: 5
+  waitSeconds: 0
   disableAllPlayerInputs: 1
   allowActions: []

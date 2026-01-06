@@ -29,7 +29,7 @@ public class MotorLabelBrickForwarder : MonoBehaviour
                 {
                     isHovered = true;
                     parent?.HandleMouseEnter();
-                    Debug.Log("enter");
+                   
                 }
 
                 if (IsPointerReleased())

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dd67a097bf1d424d920d5335e86efb5, type: 3}
+  m_Name: Step17 wow
+  m_EditorClassIdentifier: 
+  title: 
+  body: "WOW! Your robot is moving! \nNow it\u2019s your turn. Finish the challenge
+    and have fun building with ARISE!"
+  worldTarget: 
+  uiTargetName: 
+  blockOtherClicks: 1
+  completionMode: 5
+  requiredTag: 
+  requiredKey: 0
+  waitSeconds: 0
+  disableAllPlayerInputs: 1
+  allowActions: []

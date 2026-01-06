@@ -10,18 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1dd67a097bf1d424d920d5335e86efb5, type: 3}
-  m_Name: Step_02_OpenMenu
+  m_Name: Step2 move
   m_EditorClassIdentifier: 
-  title: Test 1
-  body: "This is a very long paragraph intended to test text wrapping and vertical
-    expansion.\r\nThis is a very long paragraph intended to test text wrapping and
-    vertical expansion.\r"
+  title: 
+  body: "You\u2019re in Move Mode. You can freely move and position parts.\nPress
+    \"Next\" to continue."
   worldTarget: {fileID: 0}
-  uiTargetName: Electronics
-  blockOtherClicks: 0
-  completionMode: 0
+  uiTargetName: Move
+  blockOtherClicks: 1
+  completionMode: 5
   requiredTag: 
   requiredKey: 0
   waitSeconds: 0
-  disableAllPlayerInputs: 0
+  disableAllPlayerInputs: 1
   allowActions: []

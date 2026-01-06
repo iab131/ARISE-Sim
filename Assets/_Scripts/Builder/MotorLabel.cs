@@ -164,6 +164,7 @@ public class MotorLabel : MonoBehaviour
             EventSystem.current.IsPointerOverGameObject()) return;
 
         MotorLabelManager.Instance.OnMotorClicked(this);
+        TutorialManager.Instance?.SignalStepDone();
     }
 
     // Keep Unity’s original OnMouse* but just forward to the handlers

@@ -126,6 +126,7 @@ public class MotorLabelManager : MonoBehaviour
             if (kv.Value == currentTarget) { takenLetters.Remove(kv.Key); break; }
 
         takenLetters[previewLetter] = currentTarget;
+        TutorialManager.Instance?.SignalStepDone();
         CloseModal();
     }
 

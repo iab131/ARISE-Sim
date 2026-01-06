@@ -6,7 +6,7 @@ public class CameraControl : MonoBehaviour
 {
 
 
-    #if UNITY_IOS || UNITY_ANDROID || UNITY_EDITOR
+#if UNITY_IOS || UNITY_ANDROID || UNITY_EDITOR
 private bool rotatingByTouch;
 private Vector2 lastTouchPos;
 #endif
@@ -43,7 +43,7 @@ private Vector2 lastTouchPos;
     if (NavBarController.currentview != NavBarController.View.Building)
         return;
 
-#if UNITY_IOS || UNITY_ANDROID || UNITY_EDITOR
+#if UNITY_IOS || UNITY_ANDROID
     HandleTouchCamera();
 #if !UNITY_EDITOR
     return; // ❗ prevents mouse input on phone

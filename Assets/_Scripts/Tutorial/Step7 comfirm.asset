@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1dd67a097bf1d424d920d5335e86efb5, type: 3}
-  m_Name: Step_3_Move
+  m_Name: Step7 comfirm
   m_EditorClassIdentifier: 
-  title: mode
-  body: move
-  worldTarget: {fileID: 0}
-  uiTargetName: Move
-  blockOtherClicks: 0
+  title: 
+  body: "When ready, click \u201CConfirm\u201D to lock the connection."
+  worldTarget: 
+  uiTargetName: Check
+  blockOtherClicks: 1
   completionMode: 0
   requiredTag: 
   requiredKey: 0
