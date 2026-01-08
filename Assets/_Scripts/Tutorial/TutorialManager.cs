@@ -295,7 +295,7 @@ public class TutorialManager : MonoBehaviour
         {
 
 #if UNITY_ANDROID || UNITY_IOS
-if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+                if (Input.touchCount > 0 && Input.GetTouch(0).phase == UnityEngine.TouchPhase.Began)
 #else
                 if (Input.GetMouseButtonDown(0))
 #endif
