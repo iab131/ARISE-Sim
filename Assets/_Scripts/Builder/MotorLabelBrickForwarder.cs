@@ -1,83 +1,40 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Collider))]
 public class MotorLabelBrickForwarder : MonoBehaviour
 {
     private MotorLabel parent;
-    private bool isHovered;
 
     private void Awake()
     {
         parent = GetComponentInParent<MotorLabel>();
+        if (parent == null)
+            Debug.LogError($"{name}: No MotorLabel found in parents.");
     }
 
-    private void Update()
+    private bool OverUI()
     {
-        if (IsPointerOverUI())
-        {
-            ClearHover();
-            return;
-        }
+        if (EventSystem.current == null) return false;
 
-        Ray ray = Camera.main.ScreenPointToRay(GetPointerPosition());
-        if (Physics.Raycast(ray, out RaycastHit hit))
-        {
-            if (hit.collider == GetComponent<Collider>())
-            {
-                if (!isHovered)
-                {
-                    isHovered = true;
-                    parent?.HandleMouseEnter();
-                   
-                }
-
-                if (IsPointerReleased())
-                {
-                    parent?.HandleMouseUp();
-                }
-
-                return;
-            }
-        }
-
-        ClearHover();
-    }
-
-    private void ClearHover()
-    {
-        if (!isHovered) return;
-        isHovered = false;
-        parent?.HandleMouseExit();
-    }
-
-    private bool IsPointerOverUI()
-    {
-#if UNITY_IOS || UNITY_ANDROID
-        if (Input.touchCount > 0)
-            return EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId);
-#endif
+        // Works for mouse (Editor/Windows/WebGL). On iOS, touches are simulated as mouse too.
         return EventSystem.current.IsPointerOverGameObject();
     }
 
-    private Vector3 GetPointerPosition()
+    private void OnMouseEnter()
     {
-#if UNITY_IOS || UNITY_ANDROID
-        return Input.touchCount > 0
-            ? (Vector3)Input.GetTouch(0).position
-            : Input.mousePosition;
-#else
-        return Input.mousePosition;
-#endif
+        if (OverUI()) return;
+        parent?.HandleMouseEnter();
     }
 
-    private bool IsPointerReleased()
+    private void OnMouseExit()
     {
-#if UNITY_IOS || UNITY_ANDROID
-        return Input.touchCount > 0 &&
-               Input.GetTouch(0).phase == TouchPhase.Ended;
-#else
-        return Input.GetMouseButtonUp(0);
-#endif
+        parent?.HandleMouseExit();
+    }
+
+    private void OnMouseUpAsButton()
+    {
+        if (OverUI()) return;
+        parent?.HandleMouseUp();
     }
 }

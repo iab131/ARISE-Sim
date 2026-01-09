@@ -168,12 +168,13 @@ private Vector2 lastTouchPos;
 void HandleTouchCamera()
 {
 #if UNITY_EDITOR
-    // simulate 1-finger touch with mouse
-    if (Input.GetMouseButtonDown(0))
-    {
-        if (EventSystem.current.IsPointerOverGameObject())
-            return;
+        // simulate 1-finger touch with mouse
+    if (ControlManager.CurrentTouchOwner == ControlManager.TouchOwner.Part)
+        return;
 
+        if (Input.GetMouseButtonDown(0))
+    {
+        
         if (!IsPartBeingDragged())
         {
             rotatingByTouch = true;

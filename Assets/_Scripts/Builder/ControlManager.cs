@@ -9,6 +9,15 @@ using Unity.VisualScripting;
 
 public class ControlManager : MonoBehaviour
 {
+
+    public enum TouchOwner
+    {
+        None,
+        Camera,
+        Part
+    }
+    public static TouchOwner CurrentTouchOwner = TouchOwner.None;
+
     /* =============================================================
      *  HIGH-LEVEL MODES
      * =============================================================*/
@@ -120,20 +129,23 @@ private TouchIntent touchIntent = TouchIntent.None;
         unitRenderer = unitSizeReference.GetComponent<Renderer>();
         unitDistance = unitRenderer.bounds.size.x / 2; // Use X, Y, or Z as needed
     }
-    
+
     void Update()
     {
-        if (IsInputFieldFocused() || MotorLabelManager.Instance.IsModalOpen) return;
+        if (IsInputFieldFocused() || MotorLabelManager.Instance.IsModalOpen)
+            return;
 
-#if UNITY_IOS || UNITY_ANDROID
-        if (currentMode == Mode.Move){
-            HandleTouchControls();
+        if (Application.isMobilePlatform)
+        {
+            if (currentMode == Mode.Move)
+                HandleTouchControls();
+            else
+                HandleHoleFSM();
+
+            return;
         }
-        else {
-            HandleHoleFSM();
-        }
-        return;
-#endif
+
+        // DESKTOP
         HandleModeHotkeys();
         HandleDuplication();
         HandleDeletion();
@@ -152,64 +164,59 @@ private TouchIntent touchIntent = TouchIntent.None;
 
 
 
+
 #if UNITY_IOS || UNITY_ANDROID
-void HandleTouchControls()
-{
-    if (Input.touchCount != 1) return;
-
-    Touch t = Input.GetTouch(0);
-
-    // Ignore UI
-    if (EventSystem.current.IsPointerOverGameObject(t.fingerId))
-        return;
-
-    int mask = 1 << partsLayer;
-
-    if (t.phase == TouchPhase.Began)
+    void HandleTouchControls()
     {
-        Ray ray = Camera.main.ScreenPointToRay(t.position);
+        if (Input.touchCount == 0) return;
 
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, mask))
+        Touch t = Input.GetTouch(0);
+        int mask = 1 << partsLayer;
+
+        // ───────── TOUCH BEGIN ─────────
+        if (t.phase == TouchPhase.Began)
         {
-            // Start dragging (same logic as mouse)
-            draggedPart = GetGroupRoot(hit.transform).gameObject;
+            Ray ray = Camera.main.ScreenPointToRay(t.position);
 
-            Vector3 hitPoint = hit.point;
-            grabLocal = draggedPart.transform.InverseTransformPoint(hitPoint);
-            dragPlane = new Plane(Camera.main.transform.forward, hitPoint);
-        }
-    }
-    else if (t.phase == TouchPhase.Moved && draggedPart != null)
-    {
-        Ray ray = Camera.main.ScreenPointToRay(t.position);
-        dragPlane.Raycast(ray, out float enter);
-
-        Vector3 planePoint = ray.GetPoint(enter);
-        Vector3 grabWorldOffset =
-            draggedPart.transform.TransformVector(grabLocal);
-
-        Vector3 target = planePoint - grabWorldOffset;
-        draggedPart.transform.position = target;
-
-        if (IsPointerOverInteractiveUI())
-        {
-            if (GetGroupRoot(draggedPart.transform).childCount > 1)
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, mask))
             {
-                if (!draggedPart.name.Contains("ControlHub"))
-                Destroy(draggedPart);
+                // ✅ CLAIM TOUCH FOR PART DRAG
+                CurrentTouchOwner = TouchOwner.Part;
+
+                draggedPart = GetGroupRoot(hit.transform).gameObject;
+                grabLocal = draggedPart.transform.InverseTransformPoint(hit.point);
+
+                // Stable drag plane
+                dragPlane = new Plane(Camera.main.transform.forward, hit.point);
             }
             else
             {
-                if (!HasControlHub(draggedPart.transform))
-                Destroy(GetGroupRoot(draggedPart.transform).gameObject);
-            }   
+                CurrentTouchOwner = TouchOwner.None;
+            }
+        }
+
+        // ───────── TOUCH MOVE ─────────
+        else if ((t.phase == TouchPhase.Moved || t.phase == TouchPhase.Stationary)
+                 && draggedPart != null
+                 && CurrentTouchOwner == TouchOwner.Part)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(t.position);
+
+            if (dragPlane.Raycast(ray, out float enter))
+            {
+                Vector3 planePoint = ray.GetPoint(enter);
+                Vector3 grabWorldOffset = draggedPart.transform.TransformVector(grabLocal);
+                draggedPart.transform.position = planePoint - grabWorldOffset;
+            }
+        }
+
+        // ───────── TOUCH END (⬅️ YOUR LINE GOES HERE) ─────────
+        else if (t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled)
+        {
+            draggedPart = null;
+            CurrentTouchOwner = TouchOwner.None;
         }
     }
-    else if (t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled)
-    {
-        draggedPart = null;
-    }
-}
 #endif
 
 
@@ -881,6 +888,7 @@ void HandleTouchControls()
         part.transform.localRotation = prefab.transform.localRotation;
         part.transform.localScale = new Vector3(1,1,1);
         draggedPart = partRoot;
+        CurrentTouchOwner = TouchOwner.Part;
         // pretend they clicked the group’s origin
         Vector3 hitPoint = partRoot.transform.position;
 

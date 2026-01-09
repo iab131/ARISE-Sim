@@ -26,6 +26,7 @@ public class NavBarController : MonoBehaviour
     [SerializeField] private GameObject buildingRoot;
     [SerializeField] private GameObject simulationRoot;
     [SerializeField] private GameObject arRoot;
+    [SerializeField] private GameObject arSimRoot;
     [SerializeField] private Transform codeRoot;
 
     [Header("Nav Buttons")]
@@ -91,7 +92,7 @@ public class NavBarController : MonoBehaviour
         // Motor assignment UI
         MotorLabelManager.Instance.SetAssignMode(false);
 
-        SimRobotManager.SpawnSimulationRobot(targetView, buildingRoot, simulationRoot, arRoot);
+        SimRobotManager.SpawnSimulationRobot(targetView, buildingRoot, simulationRoot, arSimRoot);
         
 
     }
