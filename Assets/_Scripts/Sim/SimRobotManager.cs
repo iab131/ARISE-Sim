@@ -1,7 +1,15 @@
+using Unity.XR.CoreUtils;
 using UnityEngine;
-
+using UnityEngine.XR.ARFoundation;
+using static UnityEngine.GUI;
 public static class SimRobotManager
 {
+    private static XROrigin xrOrigin;
+
+    /// <summary>
+    /// Gets the active XR Origin in the scene.
+    /// Cached after first lookup.
+    /// </summary>
 
     public static Vector3 robotRegPos;
     public static Quaternion robotRegRot;
@@ -45,7 +53,7 @@ public static class SimRobotManager
         }
 
         GameObject groupCopy = Object.Instantiate(groupToCopy.gameObject, parent);
-        //SimRobot = groupCopy;
+
         groupCopy.name = "Robot";
         groupCopy.transform.localPosition = groupToCopy.localPosition;
         groupCopy.transform.localRotation = groupToCopy.localRotation;
